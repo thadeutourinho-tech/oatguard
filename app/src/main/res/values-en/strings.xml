@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">OatGuard</string>
+    <string name="splash_tagline">Smart protection against malicious QR codes</string>
+
+    <string name="home_title">OatGuard</string>
+    <string name="btn_scan_qr">Check if QR Code is Safe</string>
+    <string name="btn_scan_another">Scan Another QR Code</string>
+    <string name="btn_know_capsec">Learn about CapSEC</string>
+    <string name="btn_know_oatcall">Learn about OatCall</string>
+    <string name="banner_capsec_subtitle">Digital security for businesses</string>
+    <string name="banner_oatcall_subtitle">Part of the Oat ecosystem</string>
+
+    <string name="scanner_hint">Point the camera at the QR Code</string>
+    <string name="scanner_permission_title">Camera permission required</string>
+    <string name="scanner_permission_message">OatGuard needs camera access to scan QR codes. Enable the permission in the app settings.</string>
+    <string name="scanner_permission_grant">Allow Camera</string>
+    <string name="scanner_open_settings">Open Settings</string>
+
+    <string name="btn_open_link">Open Link</string>
+    <string name="result_destination_label">Destination</string>
+    <string name="result_validating">Validating link…</string>
+
+    <string name="result_title_safe">Safe Site</string>
+    <string name="result_title_malware">Malware Link Detected</string>
+    <string name="result_title_phishing">Possible Phishing</string>
+    <string name="result_title_unwanted">Suspicious Software</string>
+    <string name="result_title_harmful_app">Potentially Harmful Application</string>
+
+    <string name="score_safe">No known threats detected</string>
+    <string name="score_malware">Potential malware risk detected</string>
+    <string name="score_phishing">Possible phishing attempt</string>
+    <string name="score_suspicious">Possible suspicious software</string>
+    <string name="score_harmful_app">Potentially harmful application</string>
+
+    <string name="error_no_url">QR code does not contain a valid link</string>
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_api_unavailable">We couldn\'t validate the link right now. Please try again</string>
+    <string name="error_no_browser">No browser found to open the link</string>
+    <string name="error_generic">Something went wrong. Please try again</string>
+
+    <string name="attribution">Malware protection provided by Google Safe Browsing</string>
+    <string name="learn_more">Learn more about Google Safe Browsing</string>
+    <string name="disclaimer">OatGuard provides informational analysis based on known threats. It does not constitute an absolute guarantee of safety.</string>
+
+    <string name="info_button_description">Information and privacy</string>
+    <string name="content_description_logo">OatGuard logo</string>
+    <string name="content_description_score">Safety score</string>
+</resources>

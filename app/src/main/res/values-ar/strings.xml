@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">OatGuard</string>
+    <string name="splash_tagline">حماية ذكية من رموز QR الضارة</string>
+
+    <string name="home_title">OatGuard</string>
+    <string name="btn_scan_qr">تحقق مما إذا كان رمز QR آمنًا</string>
+    <string name="btn_scan_another">فحص رمز QR آخر</string>
+    <string name="btn_know_capsec">تعرّف على CapSEC</string>
+    <string name="btn_know_oatcall">تعرّف على OatCall</string>
+    <string name="banner_capsec_subtitle">الأمن الرقمي للشركات</string>
+    <string name="banner_oatcall_subtitle">جزء من منظومة Oat</string>
+
+    <string name="scanner_hint">وجّه الكاميرا نحو رمز QR</string>
+    <string name="scanner_permission_title">مطلوب إذن الكاميرا</string>
+    <string name="scanner_permission_message">يحتاج OatGuard إلى الوصول إلى الكاميرا لمسح رموز QR. فعّل الإذن في إعدادات التطبيق.</string>
+    <string name="scanner_permission_grant">السماح بالكاميرا</string>
+    <string name="scanner_open_settings">فتح الإعدادات</string>
+
+    <string name="btn_open_link">فتح الرابط</string>
+    <string name="result_destination_label">الوجهة</string>
+    <string name="result_validating">جارٍ التحقق من الرابط…</string>
+
+    <string name="result_title_safe">موقع آمن</string>
+    <string name="result_title_malware">تم اكتشاف رابط يحتوي على برمجيات خبيثة</string>
+    <string name="result_title_phishing">احتمال تصيّد احتيالي</string>
+    <string name="result_title_unwanted">برنامج مشتبه به</string>
+    <string name="result_title_harmful_app">تطبيق قد يكون خطيرًا</string>
+
+    <string name="score_safe">لم يتم اكتشاف أي تهديدات معروفة</string>
+    <string name="score_malware">تم اكتشاف خطر محتمل ببرمجية خبيثة</string>
+    <string name="score_phishing">احتمال وجود محاولة تصيّد احتيالي</string>
+    <string name="score_suspicious">برنامج مشتبه به محتمل</string>
+    <string name="score_harmful_app">تطبيق قد يكون خطيرًا</string>
+
+    <string name="error_no_url">رمز QR لا يحتوي على رابط صالح</string>
+    <string name="error_no_internet">لا يوجد اتصال بالإنترنت</string>
+    <string name="error_api_unavailable">تعذر التحقق من الرابط الآن. حاول مرة أخرى</string>
+    <string name="error_no_browser">لم يتم العثور على متصفح لفتح الرابط</string>
+    <string name="error_generic">حدث خطأ ما. حاول مرة أخرى</string>
+
+    <string name="attribution">الحماية من البرمجيات الخبيثة مقدمة من Google Safe Browsing</string>
+    <string name="learn_more">معرفة المزيد حول Google Safe Browsing</string>
+    <string name="disclaimer">يقدم OatGuard تحليلاً معلوماتيًا يعتمد على التهديدات المعروفة. وهو لا يشكل ضمانًا مطلقًا للأمان.</string>
+
+    <string name="info_button_description">المعلومات والخصوصية</string>
+    <string name="content_description_logo">شعار OatGuard</string>
+    <string name="content_description_score">درجة الأمان</string>
+</resources>

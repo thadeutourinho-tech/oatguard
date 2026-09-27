@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    OatGuard exige HTTPS para todos os domínios usados pelo app.
+    Sem Certificate Pinning fixo (evita falhas quando o Google renova certificados);
+    confiamos nas CAs padrão do sistema.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">safebrowsing.googleapis.com</domain>
+        <domain includeSubdomains="true">www.capsec.com.br</domain>
+        <domain includeSubdomains="true">play.google.com</domain>
+    </domain-config>
+</network-security-config>

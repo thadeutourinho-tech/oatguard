@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">OatGuard</string>
+    <string name="splash_tagline">हानिकारक QR कोड के खिलाफ स्मार्ट सुरक्षा</string>
+
+    <string name="home_title">OatGuard</string>
+    <string name="btn_scan_qr">जांचें कि QR कोड सुरक्षित है या नहीं</string>
+    <string name="btn_scan_another">दूसरा QR कोड जांचें</string>
+    <string name="btn_know_capsec">CapSEC के बारे में जानें</string>
+    <string name="btn_know_oatcall">OatCall के बारे में जानें</string>
+    <string name="banner_capsec_subtitle">व्यवसायों के लिए डिजिटल सुरक्षा</string>
+    <string name="banner_oatcall_subtitle">Oat इकोसिस्टम का हिस्सा</string>
+
+    <string name="scanner_hint">कैमरे को QR कोड पर पॉइंट करें</string>
+    <string name="scanner_permission_title">कैमरा अनुमति आवश्यक है</string>
+    <string name="scanner_permission_message">QR कोड स्कैन करने के लिए OatGuard को कैमरे की आवश्यकता है। ऐप सेटिंग्स में अनुमति सक्षम करें।</string>
+    <string name="scanner_permission_grant">कैमरा अनुमति दें</string>
+    <string name="scanner_open_settings">सेटिंग्स खोलें</string>
+
+    <string name="btn_open_link">लिंक खोलें</string>
+    <string name="result_destination_label">गंतव्य</string>
+    <string name="result_validating">लिंक की जांच हो रही है…</string>
+
+    <string name="result_title_safe">सुरक्षित साइट</string>
+    <string name="result_title_malware">मैलवेयर लिंक का पता चला</string>
+    <string name="result_title_phishing">संभावित फ़िशिंग</string>
+    <string name="result_title_unwanted">संदिग्ध सॉफ़्टवेयर</string>
+    <string name="result_title_harmful_app">संभावित रूप से हानिकारक ऐप</string>
+
+    <string name="score_safe">कोई ज्ञात खतरा नहीं मिला</string>
+    <string name="score_malware">संभावित मैलवेयर जोखिम का पता चला</string>
+    <string name="score_phishing">संभावित फ़िशिंग प्रयास</string>
+    <string name="score_suspicious">संभावित संदिग्ध सॉफ़्टवेयर</string>
+    <string name="score_harmful_app">संभावित रूप से हानिकारक ऐप</string>
+
+    <string name="error_no_url">QR कोड में कोई मान्य लिंक नहीं है</string>
+    <string name="error_no_internet">इंटरनेट कनेक्शन नहीं है</string>
+    <string name="error_api_unavailable">हम अभी लिंक की जांच नहीं कर सके। कृपया फिर से प्रयास करें</string>
+    <string name="error_no_browser">लिंक खोलने के लिए कोई ब्राउज़र नहीं मिला</string>
+    <string name="error_generic">कुछ गलत हो गया। कृपया फिर से प्रयास करें</string>
+
+    <string name="attribution">मैलवेयर सुरक्षा Google Safe Browsing द्वारा प्रदान की गई है</string>
+    <string name="learn_more">Google Safe Browsing के बारे में अधिक जानें</string>
+    <string name="disclaimer">OatGuard ज्ञात खतरों के आधार पर सूचनात्मक विश्लेषण प्रदान करता है। यह सुरक्षा की पूर्ण गारंटी नहीं है।</string>
+
+    <string name="info_button_description">जानकारी और गोपनीयता</string>
+    <string name="content_description_logo">OatGuard लोगो</string>
+    <string name="content_description_score">सुरक्षा स्कोर</string>
+</resources>

@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">OatGuard</string>
+    <string name="splash_tagline">Умная защита от вредоносных QR-кодов</string>
+
+    <string name="home_title">OatGuard</string>
+    <string name="btn_scan_qr">Проверить безопасность QR-кода</string>
+    <string name="btn_scan_another">Проверить другой QR-код</string>
+    <string name="btn_know_capsec">Узнать о CapSEC</string>
+    <string name="btn_know_oatcall">Узнать о OatCall</string>
+    <string name="banner_capsec_subtitle">Цифровая безопасность для бизнеса</string>
+    <string name="banner_oatcall_subtitle">Часть экосистемы Oat</string>
+
+    <string name="scanner_hint">Наведите камеру на QR-код</string>
+    <string name="scanner_permission_title">Требуется разрешение на камеру</string>
+    <string name="scanner_permission_message">OatGuard требуется доступ к камере для сканирования QR-кодов. Включите разрешение в настройках приложения.</string>
+    <string name="scanner_permission_grant">Разрешить камеру</string>
+    <string name="scanner_open_settings">Открыть настройки</string>
+
+    <string name="btn_open_link">Открыть ссылку</string>
+    <string name="result_destination_label">Назначение</string>
+    <string name="result_validating">Проверка ссылки…</string>
+
+    <string name="result_title_safe">Безопасный сайт</string>
+    <string name="result_title_malware">Обнаружена ссылка с вредоносным ПО</string>
+    <string name="result_title_phishing">Возможный фишинг</string>
+    <string name="result_title_unwanted">Подозрительное программное обеспечение</string>
+    <string name="result_title_harmful_app">Потенциально опасное приложение</string>
+
+    <string name="score_safe">Известных угроз не обнаружено</string>
+    <string name="score_malware">Обнаружен потенциальный риск вредоносного ПО</string>
+    <string name="score_phishing">Возможная попытка фишинга</string>
+    <string name="score_suspicious">Возможное подозрительное ПО</string>
+    <string name="score_harmful_app">Потенциально опасное приложение</string>
+
+    <string name="error_no_url">QR-код не содержит действительной ссылки</string>
+    <string name="error_no_internet">Нет подключения к интернету</string>
+    <string name="error_api_unavailable">Не удалось проверить ссылку сейчас. Попробуйте снова</string>
+    <string name="error_no_browser">Не найден браузер для открытия ссылки</string>
+    <string name="error_generic">Что-то пошло не так. Попробуйте снова</string>
+
+    <string name="attribution">Защита от вредоносного ПО предоставлена Google Safe Browsing</string>
+    <string name="learn_more">Подробнее о Google Safe Browsing</string>
+    <string name="disclaimer">OatGuard предоставляет информационный анализ на основе известных угроз. Это не является абсолютной гарантией безопасности.</string>
+
+    <string name="info_button_description">Информация и конфиденциальность</string>
+    <string name="content_description_logo">Логотип OatGuard</string>
+    <string name="content_description_score">Оценка безопасности</string>
+</resources>

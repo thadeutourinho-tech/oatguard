@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">OatGuard</string>
+    <string name="splash_tagline">Proteção inteligente contra QR codes maliciosos</string>
+
+    <!-- Home -->
+    <string name="home_title">OatGuard</string>
+    <string name="btn_scan_qr">Verificar se QR Code é Seguro</string>
+    <string name="btn_scan_another">Verificar Outro QR Code</string>
+    <string name="btn_know_capsec">Conheça a CapSEC</string>
+    <string name="btn_know_oatcall">Conheça o OatCall</string>
+    <string name="banner_capsec_subtitle">Segurança digital para empresas</string>
+    <string name="banner_oatcall_subtitle">Parte do ecossistema Oat</string>
+
+    <!-- Scanner -->
+    <string name="scanner_hint">Aponte a câmera para o QR Code</string>
+    <string name="scanner_permission_title">Permissão de câmera necessária</string>
+    <string name="scanner_permission_message">O OatGuard precisa da câmera para escanear QR codes. Ative a permissão nas configurações do app.</string>
+    <string name="scanner_permission_grant">Permitir Câmera</string>
+    <string name="scanner_open_settings">Abrir Configurações</string>
+
+    <!-- Result -->
+    <string name="btn_open_link">Abrir Link</string>
+    <string name="result_destination_label">Destino</string>
+    <string name="result_validating">Validando link…</string>
+
+    <!-- Títulos de resultado (curto, exibido perto do score) -->
+    <string name="result_title_safe">Site Seguro</string>
+    <string name="result_title_malware">Link com Malware Detectado</string>
+    <string name="result_title_phishing">Possível Phishing</string>
+    <string name="result_title_unwanted">Software Suspeito</string>
+    <string name="result_title_harmful_app">Aplicação Potencialmente Perigosa</string>
+
+    <!-- Mensagens de score — linguagem qualificada (conformidade Google, seção 6.0.7) -->
+    <string name="score_safe">Nenhuma ameaça conhecida detectada</string>
+    <string name="score_malware">Risco potencial de malware detectado</string>
+    <string name="score_phishing">Possível ataque de phishing</string>
+    <string name="score_suspicious">Possível software suspeito</string>
+    <string name="score_harmful_app">Aplicação potencialmente perigosa</string>
+
+    <!-- Erros -->
+    <string name="error_no_url">QR code não contém um link válido</string>
+    <string name="error_no_internet">Sem conexão com a internet</string>
+    <string name="error_api_unavailable">Não conseguimos validar o link agora. Tente novamente</string>
+    <string name="error_no_browser">Nenhum navegador encontrado para abrir o link</string>
+    <string name="error_generic">Algo deu errado. Tente novamente</string>
+
+    <!-- Atribuição legal (obrigatório — não traduzir marca) -->
+    <string name="attribution">Proteção contra malware fornecida por Google Safe Browsing</string>
+    <string name="learn_more">Saiba mais sobre Google Safe Browsing</string>
+    <string name="disclaimer">O OatGuard fornece análise informativa baseada em ameaças conhecidas. Não constitui garantia absoluta de segurança.</string>
+
+    <!-- Acessibilidade -->
+    <string name="info_button_description">Informações e privacidade</string>
+    <string name="content_description_logo">Logo OatGuard</string>
+    <string name="content_description_score">Score de segurança</string>
+</resources>
