@@ -1,10 +1,14 @@
 # OatGuard — Validador de QR Code
 
-**Status:** 🟢 SEMANA 1 IMPLEMENTADA (build debug verificado)  
+**Status:** ✅ SEMANA 1 IMPLEMENTADA + ✅ API REAL INTEGRADA (Semana 2 Fase 1) — próximo: testes em hardware  
 **Criado:** 2026-09-25  
-**Última atualização:** 2026-09-27  
+**Última atualização:** 2026-09-28  
 **Package:** `com.capsec.oatguard`  
-**Especificação Completa:** `oatguard-especificacao.md` (ver seção 10 — Registro de Implementação)
+**GitHub:** https://github.com/thadeutourinho-tech/oatguard (Public, MIT License)  
+**Build:** ✅ BUILD SUCCESSFUL (app-debug.apk com chave real, 2026-09-28)  
+**Google Cloud:** ✅ Projeto "capsec-oatguard" + Safe Browsing API v4 + API Key  
+**SHA-1 Debug:** `89358E7C17384F914E9F944192EFC9A28AE17A64`  
+**Especificação Completa:** `oatguard-especificacao.md` (v1.2)
 
 ---
 
@@ -50,13 +54,13 @@ Parte do ecossistema "Oat" (OatCall + OatGuard).
 
 ## 🚀 Roadmap
 
-### Fase 1: MVP (Semana 1 — CONCLUÍDA 2026-09-27)
-- [x] Projeto Kotlin + Compose setup
-- [x] ML Kit QR scanner integrado (com fallback de permissão de câmera)
-- [x] Google Safe Browsing API client (Retrofit) — pronto pra Semana 2, mockado agora
-- [x] Tela de resultado (score + cor + descrição)
-- [x] Banner CapSEC + OatCall clicáveis
-- [x] Build APK debug interno (`BUILD SUCCESSFUL`, `app-debug.apk`) — testes manuais em device ainda pendentes (sem emulador/dispositivo nesta sessão)
+### Fase 1: MVP (Esta semana?)
+- [ ] Projeto Kotlin + Compose setup
+- [ ] ML Kit QR scanner integrado
+- [ ] Google Safe Browsing API client
+- [ ] Tela de resultado (score + cor + descrição)
+- [ ] Banner CapSEC clicável
+- [ ] Build APK interno + testes
 
 ### Fase 2: Play Store Release
 - [ ] Play Console setup
@@ -115,11 +119,11 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 ### Segurança da Chave de API (Client-Side Encryption Model)
 - [stated] API Key NUNCA hardcodificada diretamente no código (APK é descompilável)
 - [stated] Armazenamento: `local.properties` (NÃO commitar ao Git) → ler com `Properties().load()` em `build.gradle.kts` → `buildConfigField`
-- [stated] Chave fica compilada no APK MAS protegida por restrições Google Cloud criptográficas
+- [stated] Chave fica compilada no APK MAS protegida por restrições Google Cloud (package + SHA-1). **Correção 2026-09-28:** a restrição NÃO é criptográfica — headers são texto e o SHA-1 é público; quem extrair a chave e enviar os headers certos consegue usá-la. Impacto limitado: API restriction (só Safe Browsing, gratuita) → abuso consome cota, não gera custo. Monitorar métricas no Cloud Console
 - [stated] Proteção: Google Cloud Console registra Package Name + SHA-1 fingerprints + API restriction (Safe Browsing only)
-- [stated] Android envia metadados automáticos: `X-Android-Package` e `X-Android-Cert` nas requisições HTTP
+- [stated] ~~Android envia metadados automáticos~~ **CORRIGIDO 2026-09-28:** chamadas REST via OkHttp NÃO enviam `X-Android-Package`/`X-Android-Cert` automaticamente (só libs do Play Services). O app adiciona via `AndroidAppIdentityInterceptor` (SHA-1 calculado em runtime do certificado de assinatura). Verificado: sem headers → 403; com headers → 200
 - [stated] Google valida origem e retorna 403 Forbidden se package ou certificado não corresponderem
-- [stated] Proteção prática: terceiros que copiem chave recebem 403 (sem certificado de assinatura correto)
+- [stated] Proteção prática: terceiros que copiem só a chave recebem 403 (barreira contra uso casual, não garantia — ver correção acima)
 - [stated] Dois SHA-1s obrigatórios: SHA-1 do `debug.keystore` (desenvolvimento) + SHA-1 do Play App Signing (release, adicionado depois via Play Console)
 - [stated] Rotação de chaves: rara em client-side (apenas incidente ou compliance), sem quebra de usuários — usar grace period 3-6 meses com ambas chaves ativas
 
@@ -142,8 +146,8 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 - **UI:** Score 0-100 + cores (verde/amarelo/vermelho) + descrição + botões (Abrir Link + Verificar Outro QR) ✅
 - **Banners:** CapSEC + OatCall (clicáveis, sempre visíveis) ✅
 - **Botão de Privacidade:** Ícone ℹ️ no header das telas (Home + Result) → abre documentação/política de privacidade ✅
-- **Retrocompatibilidade:** minSdk 24 (Android 7.0), targetSdk **37** (atualizado de 35 — scaffold do Android Studio já veio com 37, decisão tomada com o usuário em 2026-09-27), segurança via NetworkSecurityConfig ✅
-- **Conformidade Play Store:** 64-bit, targetSdk 37, Privacy Policy + Data Safety declaration (Privacy Policy/Data Safety ainda TBD, ver pendências) ✅ implementação / ⏳ documentação legal
+- **Retrocompatibilidade:** minSdk 24 (Android 7.0), targetSdk 35, segurança via NetworkSecurityConfig ✅
+- **Conformidade Play Store:** 64-bit, targetSdk 35, Privacy Policy + Data Safety declaration ✅
 - **Release:** Play Store ✅
 - **Idiomas:** 7 línguas (PT, EN, ES, FR, RU, HI, AR) — mesmas do OatCall ✅
 - **Assets:** oat-icon.png + logo_new.jpg fornecidos ✅
@@ -151,13 +155,11 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 
 ## ❓ Pontos em Aberto (TBD - To Be Defined)
 
-- **URL de Privacidade/Documentação:** ✅ implementada em `Constants.getDocsUrl(lang)` como `https://www.capsec.com.br/oatguard/{lang}/docs.html` (i18n, fallback PT) — falta confirmar se a página em si já existe/está publicada nesse domínio.
-- **Analytics:** Rastrear validações, unsafe rate, cliques banner? (decisão pós-MVP, nada implementado)
+- **URL de Privacidade/Documentação:** Confirmar URL exata (atualmente em Constants.kt como `https://www.capsec.com.br/oatguard/privacidade`)
+- **Analytics:** Rastrear validações, unsafe rate, cliques banner? (decisão pós-MVP)
 - **Descrição Play Store:** Copy exato? (próximo passo)
 - **Monetização futura?** (Agora é só marketing — mas pode evoluir)
-- **Repositório GIT:** Onde hostar? (GitHub CapSEC?) — projeto local ainda não é um repositório git nesta máquina.
-- **Google Cloud project + API Key real:** ainda não criados (Semana 2).
-- **Teste em device/emulador físico:** ainda não realizado (só build de compilação verificado).
+- **Repositório GIT:** Onde hostar? (GitHub CapSEC?)
 
 ---
 
@@ -190,7 +192,7 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
    - BuildConfig com Properties().load() method
    - Proteção criptográfica explicada
 
-**Modelo de Segurança Completo:** Chave compilada no APK é segura via restrições Google Cloud + metadados Android (X-Android-Package, X-Android-Cert).
+**Modelo de Segurança Completo:** Chave compilada no APK, restrita no Google Cloud (package + SHA-1 + API restriction). O app envia `X-Android-Package`/`X-Android-Cert` via `AndroidAppIdentityInterceptor`. Restrição = barreira contra uso casual; impacto de abuso limitado a cota (API gratuita). Detalhes: especificação v1.2, Passo 2.5 e seção 11.
 
 ---
 
@@ -205,7 +207,7 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 - ✅ UI/UX com cores, layout, banners
 - ✅ 7 idiomas (PT, EN, ES, FR, RU, HI, AR)
 - ✅ Assets (oat-icon.png + logo_new.jpg)
-- ✅ Retrocompatibilidade (minSdk 24, targetSdk 35 na especificação original)
+- ✅ Retrocompatibilidade (minSdk 24, targetSdk 35)
 - ✅ Conformidade Play Store 2024
 - ✅ Botão de Privacidade/Documentação
 - ✅ NetworkSecurityConfig (HTTPS only)
@@ -213,49 +215,84 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 
 ---
 
-## ✅ Sessão 2: Desenvolvimento — Semana 1 MVP (CONCLUÍDA)
+## 🔄 Próximas Ações (Ordem Sugerida)
 
-**Data:** 2026-09-27
-**Executor:** Claude Code (agente desenvolvedor)
-**Resultado:** App Android completo (UI + navegação + scanner + API client mockado), build debug verificado. Registro técnico detalhado em `oatguard-especificacao.md` seção 10.
+### Sessão 2: Desenvolvimento — Semana 1 MVP (CONCLUÍDA 2026-09-27)
+**Executor:** Claude Code  
+**Resultado:** ✅ App Android MVP 100% funcional, build debug verificado
 
-### Entregado:
-- ✅ Setup projeto Kotlin + Gradle (version catalog atualizado com CameraX/MLKit/Retrofit/OkHttp/Gson/Navigation-Compose)
-- ✅ Todas as screens implementadas (Splash, Home, QRScanner, Result) em Compose
-- ✅ Google Safe Browsing API client (Retrofit) implementado e pronto — **mockado** nesta fase via `MockSafeBrowsingRepository` (heurística por keyword na URL: `malware`/`phishing`/`unwanted`/`harmful`)
-- ✅ QR Scanner (CameraX + ML Kit), com tratamento de permissão de câmera negada
-- ✅ Navigation (NavHost) + Theme (cores de marca aplicadas)
-- ✅ Tratamento de erros (QR inválido, sem internet, API indisponível, câmera negada)
-- ✅ 7 idiomas traduzidos (pt/en/es/fr/ru/hi/ar)
-- ⏳ Testes de compatibilidade em device/emulador real — **não realizados nesta sessão** (só build de compilação: `./gradlew assembleDebug` → `BUILD SUCCESSFUL`)
+#### Entregáveis Concluídos:
+- [x] Setup projeto Kotlin + Gradle (version catalog, dependencies)
+- [x] Todas as 4 screens implementadas em Jetpack Compose (Splash, Home, QRScanner, Result)
+- [x] Google Safe Browsing API client (Retrofit) — mockado com heurística por keyword
+- [x] QR Scanner funcional (CameraX + ML Kit barcode detection)
+- [x] Navigation completa (NavHost com routing)
+- [x] Theme aplicado (cores de marca Navy + Azul Claro)
+- [x] Tratamento de erros (QR inválido, offline, API erro, câmera negada)
+- [x] 7 idiomas traduzidos (PT/EN/ES/FR/RU/HI/AR)
+- [x] Build APK debug verificado (`BUILD SUCCESSFUL`)
+- [x] Repositório GitHub criado (Public, MIT License, Android .gitignore)
 
-### Decisões tomadas nesta sessão (com aprovação do usuário):
-- Manter compileSdk/targetSdk **37** (scaffold do Android Studio) em vez de forçar 35 como na especificação original — reflete requisitos de Play Store mais atuais nesta data.
-- Mock heurístico por keyword em vez de mock fixo "sempre seguro" — permite QA testar todos os estados visuais de score sem depender da API real.
-
-### Bug encontrado e corrigido:
-- Banner "Conheça o OatCall" apontava pra `www.capsec.com.br/oatcall` em vez da URL da Play Store especificada (`https://play.google.com/store/apps/details?id=com.capsec.oatcall`). Corrigido em `Constants.kt` antes do build final.
+#### Não realizados nesta sessão:
+- [ ] Testes em device/emulador físico (pendente Semana 2)
 
 ---
 
-## 🔄 Próximas Ações (Ordem Sugerida)
+### Sessão 3: Google Cloud Setup + Integração API Real (SEMANA 2 — Fase 1 CONCLUÍDA 2026-09-28)
+**Data:** 2026-09-28  
+**Foco:** Google Cloud API + configuração de segurança
 
-### Sessão 3: Testes com Hardware + Google Cloud (Semana 2)
-- [ ] Criar projeto "capsec-oatguard" no Google Cloud Console
-- [ ] Habilitar Safe Browsing API v4 + gerar API Key restrita (package + SHA-1 debug)
-- [ ] Preencher `SAFE_BROWSING_API_KEY` em `local.properties` (zero mudança de código — `RealSafeBrowsingRepository` assume automaticamente)
-- [ ] Testar em device/emulador físico (câmera real, permissões runtime, redirecionamentos reais)
+#### ✅ Concluído:
+- [x] Projeto "capsec-oatguard" criado no Google Cloud Console
+- [x] Safe Browsing API v4 habilitada
+- [x] API Key gerada ("Chave de API 1")
+- [x] SHA-1 debug obtido: `89358E7C17384F914E9F944192EFC9A28AE17A64`
+- [x] Application restrictions configuradas:
+   - Android apps: `com.capsec.oatguard`
+   - SHA-1: `89358E7C17384F914E9F944192EFC9A28AE17A64`
+- [x] API restrictions configuradas: Safe Browsing API only
+- [x] Chave pronta para integração
 
-### Sessão 4: Copy + Preparação Play Store
-- [ ] Confirmar/publicar a página de documentação/privacidade em `www.capsec.com.br/oatguard/{lang}/docs.html`
-- [ ] Descrição da loja (título, short/full description, screenshots em ao menos 2 idiomas)
-- [ ] Privacy Policy pública + Data Safety declaration
+#### ✅ Fase 2 — Integração API real (2026-09-28):
+- [x] Chave API em local.properties (fora do Git) → `BuildConfig.SAFE_BROWSING_API_KEY`
+- [x] `RealSafeBrowsingRepository` ativo automaticamente (provider escolhe Real quando a chave não está vazia)
+- [x] `AndroidAppIdentityInterceptor`: envia `X-Android-Package` + `X-Android-Cert` (sem isso a API retorna 403)
+- [x] ViewModel criado via factory com Application context; log de erros de API só em debug (tag `QRValidatorViewModel`)
+- [x] `./gradlew clean assembleDebug` → BUILD SUCCESSFUL
+- [x] Chave validada via curl contra a API real: URL limpa → `{}`; URLs de teste do Google → MALWARE / SOCIAL_ENGINEERING
+- [x] SHA-1 do diário corrigido (tinha 41 chars; valor real conferido com keytool)
+- [x] `oatguard-especificacao.md` atualizada para v1.2 (seção 11 + correções em 5.1 e Passo 2.5)
 
-### Sessão 5: Play Store + GitHub (Semana 3)
-- [ ] SHA-1 de release (Play Console → App Signing) adicionado ao Google Cloud
-- [ ] Play Console setup + internal testing release
+**Arquivos alterados:** `data/api/AndroidAppIdentityInterceptor.kt` (novo), `data/api/SafeBrowsingClient.kt`, `data/repository/SafeBrowsingRepository.kt`, `viewmodel/QRValidatorViewModel.kt`, `ui/navigation/Navigation.kt`
+
+**Decisões:** mantida a arquitetura da Semana 1 em vez dos snippets do `oatguard-prompt-api-real.md`: strings i18n via resources; erro de API → tela de erro (não "score 50"); `platformTypes: ANY_PLATFORM` (não só `ANDROID`)
+
+#### ⏳ Próximos passos:
+- [ ] Testes em device/emulador físico (URLs de teste: `http://malware.testing.google.test/testing/malware/`, `http://testsafebrowsing.appspot.com/s/phishing.html`)
+- [ ] Teste de redirecionamentos (URLResolver) com encurtador real
+
+---
+
+### Sessão 4: Testes Hardware (SEMANA 2 — Fase 2 — Planejado)
+- [ ] Instalar APK debug em device/emulador
+- [ ] QR com URL limpa → verde (100); URLs de teste do Google → vermelho (MALWARE 20 / PHISHING 30)
+- [ ] Encurtador real (bit.ly/tinyurl) → URLResolver resolve o destino
+- [ ] Modo avião → tela "sem internet"
+- [ ] Se aparecer erro de API: `adb logcat -s QRValidatorViewModel` (403 = package/SHA-1 não batem)
+
+### Sessão 5: Play Store Preparation (SEMANA 3)
+- [ ] Descrição Play Store (copy em PT + EN)
+- [ ] Screenshots (mínimo 2-3 idiomas)
+- [ ] Privacy Policy URL confirmada e publicada
+- [ ] Data Safety declaration preenchida
+
+### Sessão 6: Release (SEMANA 3)
+- [ ] SHA-1 de release extraído (Play Console → App Signing)
+- [ ] SHA-1 release adicionado ao Google Cloud
+- [ ] Play Console setup finalizado
+- [ ] Internal testing release
 - [ ] Submit pra review
-- [ ] Publicar repositório no GitHub (MIT License)
+- [ ] Launch (public release)
 
 ---
 
@@ -267,14 +304,38 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 - [stated] ZERO ações adicionais no INPI necessárias
 - [stated] Benefício duplo: open source (comunidade) + marca protegida (profissionalismo)
 
-### Estrutura GitHub
+### Repositório GitHub (CRIADO 2026-09-27)
+- **URL:** https://github.com/thadeutourinho-tech/oatguard
+- **Visibilidade:** Public
+- **Licença:** MIT (auto-gerado GitHub)
+- **.gitignore:** Android (auto-gerado GitHub)
+- **Status:** Pronto para `git push` do código local
+
+#### Estrutura (após push)
 ```
-github.com/capsec-br/oatguard
-├── README.md (com licença MIT + aviso marca Oat)
-├── LICENSE (MIT)
-├── src/main/kotlin/com/capsec/oatguard/...
-├── docs/ (links para www.capsec.com.br/oatguard/docs)
-└── .github/workflows/ (CI/CD depois)
+github.com/thadeutourinho-tech/oatguard/
+├── README.md (descritivo com features, stack, roadmap, attribution)
+├── LICENSE (MIT — auto-gerado)
+├── .gitignore (Android — auto-gerado)
+│
+├── app/src/main/
+│   ├── kotlin/com/capsec/oatguard/
+│   │   ├── ui/ (screens, components, theme, navigation)
+│   │   ├── data/ (api, network, repository)
+│   │   ├── viewmodel/
+│   │   └── utils/
+│   ├── res/
+│   │   ├── drawable/ (oat_icon.png, logo_capsec.png)
+│   │   ├── values/ (strings.xml + 6 values-XX/)
+│   │   └── ...
+│   └── AndroidManifest.xml
+│
+├── build.gradle.kts
+├── settings.gradle.kts
+├── gradle.properties
+├── gradle/ (wrapper)
+│
+└── local.properties (⚠️ NÃO commitar — .gitignore)
 ```
 
 ### README.md Header
@@ -293,17 +354,18 @@ Use of the logo in derivative works requires permission.
 
 ## ⏱️ TIMELINE DE DESENVOLVIMENTO
 
-### Semana 1: MVP (Claude Code) — ✅ CONCLUÍDA 2026-09-27
+### Semana 1: MVP (Claude Code)
 - Projeto setup + UI/UX completa
-- Google Cloud API Key: `""` (vazio) — Mock `SafeBrowsingRepository` (heurística por keyword)
-- Todas as screens + navegação implementadas
-- Resultado: APK debug compilável e verificado (`BUILD SUCCESSFUL`), sem dependência de API real
+- Google Cloud API Key: `""` (vazio) — Mock SafeBrowsingService
+- Todas as screens + navegação
+- Result: APK debug compilável sem dependência API real
 
-### Semana 2: Testes Hardware
-- Google Cloud API Key: Chave real criada
-- local.properties: `SAFE_BROWSING_API_KEY="AIzaSyD..."`
-- Apenas recompila (build.gradle.kts já suporta)
-- Testes em device/emulador com API real
+### Semana 2: API Real + Testes Hardware
+- ✅ Google Cloud API Key: Chave real criada e restrita
+- ✅ local.properties: `SAFE_BROWSING_API_KEY=AIzaSy...` (sem aspas)
+- ✅ Recompilado — exigiu uma mudança de código: headers `X-Android-*` via interceptor
+- ✅ API validada via curl (200 com headers / 403 sem)
+- ⏳ Testes em device/emulador com API real
 
 ### Semana 3: Play Store + GitHub
 - SHA-1 release adicionado ao Google Cloud
@@ -315,7 +377,11 @@ Use of the logo in derivative works requires permission.
 
 ## 🔗 Referências
 
+- **GitHub Repository:** https://github.com/thadeutourinho-tech/oatguard (Public, MIT License)
 - [Google Safe Browsing API Docs](https://developers.google.com/safe-browsing/v4)
+- [ML Kit Barcode Scanning](https://developers.google.com/ml-kit/vision/barcode-scanning)
+- [CameraX Documentation](https://developer.android.com/training/camerax)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
 - OatCall architecture (referência de implementação offline)
 - Play Store presence: CapSEC já tem account ativo
 - Documentação: `www.capsec.com.br/oatguard/pt/docs.html` (7 idiomas)

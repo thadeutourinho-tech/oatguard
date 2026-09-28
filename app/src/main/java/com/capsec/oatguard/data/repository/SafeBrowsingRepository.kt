@@ -1,5 +1,6 @@
 package com.capsec.oatguard.data.repository
 
+import android.content.Context
 import com.capsec.oatguard.BuildConfig
 import com.capsec.oatguard.data.api.SafeBrowsingClient
 import com.capsec.oatguard.data.api.SafeBrowsingService
@@ -8,6 +9,7 @@ import com.capsec.oatguard.data.api.models.ThreatTypes
 import com.capsec.oatguard.data.network.URLResolver
 import com.capsec.oatguard.utils.ThreatScoreMapper
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 /** Resultado final exibido na ResultScreen: URL resolvida + score + textos já mapeados. */
 data class ValidationResult(
@@ -29,7 +31,7 @@ interface SafeBrowsingRepository {
  * está configurada em `local.properties`.
  */
 class RealSafeBrowsingRepository(
-    private val service: SafeBrowsingService = SafeBrowsingClient.service,
+    private val service: SafeBrowsingService,
     private val apiKey: String = BuildConfig.SAFE_BROWSING_API_KEY
 ) : SafeBrowsingRepository {
 
@@ -57,7 +59,7 @@ class RealSafeBrowsingRepository(
 class MockSafeBrowsingRepository : SafeBrowsingRepository {
 
     override suspend fun checkUrl(rawUrl: String): ValidationResult {
-        delay(MOCK_LATENCY_MS) // simula latência de rede para o loading ficar visível na UI
+        delay(MOCK_LATENCY) // simula latência de rede para o loading ficar visível na UI
 
         val lower = rawUrl.lowercase()
         val threatType = when {
@@ -73,16 +75,16 @@ class MockSafeBrowsingRepository : SafeBrowsingRepository {
     }
 
     private companion object {
-        const val MOCK_LATENCY_MS = 800L
+        val MOCK_LATENCY = 800.milliseconds
     }
 }
 
 /** Seleciona a implementação real ou mock com base na presença da API key (vide timeline de 3 semanas). */
 object SafeBrowsingRepositoryProvider {
-    fun create(): SafeBrowsingRepository =
+    fun create(context: Context): SafeBrowsingRepository =
         if (BuildConfig.SAFE_BROWSING_API_KEY.isBlank()) {
             MockSafeBrowsingRepository()
         } else {
-            RealSafeBrowsingRepository()
+            RealSafeBrowsingRepository(SafeBrowsingClient.create(context))
         }
 }

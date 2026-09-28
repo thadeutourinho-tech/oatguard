@@ -1,8 +1,8 @@
 # OatGuard — Especificação Técnica Completa
 
-**Versão:** 1.1  
-**Data:** 2026-09-26 (atualizado 2026-09-27)  
-**Status:** ✅ Semana 1 implementada (Claude Code) — ver seção 10 "Registro de Implementação"
+**Versão:** 1.2  
+**Data:** 2026-09-26 (atualizado 2026-09-28)  
+**Status:** ✅ Semana 1 implementada + ✅ Semana 2 Fase 1 (API real integrada) — ver seções 10 e 11 "Registro de Implementação"
 
 ---
 
@@ -176,11 +176,14 @@ res/drawable/
 
 **Tratamento de APIs por versão:**
 ```kotlin
-// Exemplo: Usar APIs modernas quando disponível, fallback em versões antigas
-if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    // Android 13+: usar nova API
+// Exemplo real (AndroidAppIdentityInterceptor): API moderna quando disponível, fallback em versões antigas
+val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    // Android 9+: API nova, com suporte a key rotation
+    pm.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES).signingInfo?.apkContentsSigners
 } else {
-    // Android 7-12: fallback seguro
+    // Android 7-8: API antiga (deprecated, mas é a única disponível)
+    @Suppress("DEPRECATION")
+    pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures
 }
 ```
 
@@ -217,8 +220,9 @@ res/
 ```xml
 <!-- AndroidManifest.xml -->
 <application
-    android:supportsRtl="true"
-    ... />
+    android:supportsRtl="true">
+    <!-- ... demais atributos e componentes ... -->
+</application>
 ```
 
 **Strings a traduzir:**
@@ -295,7 +299,8 @@ com.capsec.oatguard/
 ├── data/
 │   ├── api/
 │   │   ├── SafeBrowsingService.kt
-│   │   ├── SafeBrowsingClient.kt
+│   │   ├── SafeBrowsingClient.kt (create(context) — OkHttp + Retrofit)
+│   │   ├── AndroidAppIdentityInterceptor.kt (X-Android-Package + X-Android-Cert; ver seção 11)
 │   │   └── models/ (request/response)
 │   ├── network/
 │   │   └── URLResolver.kt (resolve redirects, máx 5 hops, timeout 5s)
@@ -350,7 +355,9 @@ ViewModel.validateQRCode(url)
    ↓
 SafeBrowsingRepository.checkUrl(url)
    ↓
-SafeBrowsingService (Retrofit)
+URLResolver.resolve(url) (segue redirects, máx 5 hops)
+   ↓
+SafeBrowsingService (Retrofit + AndroidAppIdentityInterceptor)
    ↓ (chamada HTTP)
 Google Safe Browsing API
    ↓ (resposta)
@@ -405,7 +412,7 @@ Home Screen
         "UNWANTED_SOFTWARE",
         "POTENTIALLY_HARMFUL_APPLICATION"
       ],
-      "platformTypes": ["ANDROID", "WINDOWS", "LINUX", "OSX", "IOS"],
+      "platformTypes": ["ANY_PLATFORM"],
       "threatEntryTypes": ["URL"],
       "threatEntries": [
         {"url": "https://example.com"}
@@ -414,8 +421,10 @@ Home Screen
   }
   ```
 - **Response:**
-  - Se seguro: `{"matches": []}` (array vazio)
-  - Se ameaça: `{"matches": [{"threatType": "MALWARE", "platformType": "ANDROID"}]}`
+  - Se nenhuma ameaça conhecida: `{}` (objeto vazio, sem `matches` — verificado contra a API real em 2026-09-28)
+  - Se ameaça: `{"matches": [{"threatType": "MALWARE", "platformType": "ANY_PLATFORM", "threat": {"url": "..."}, "cacheDuration": "300s", "threatEntryType": "URL"}]}`
+- **`platformTypes: ANY_PLATFORM`** (implementado): cobre ameaças listadas para qualquer plataforma. Restringir a `ANDROID` perderia phishing/malware catalogados para outras plataformas.
+- **Headers obrigatórios:** `X-Android-Package` e `X-Android-Cert`. Sem eles, a chave com restrição "Android apps" responde `403`. Ver Passo 2.5 e seção 11.
 
 ### 5.2 Score Mapping (Linguagem Qualificada - Conformidade Google)
 
@@ -500,8 +509,9 @@ Motivo: Google rotaciona certificados e CAs periodicamente. Pin fixo sem backup 
 ```xml
 <application
     android:networkSecurityConfig="@xml/network_security_config"
-    android:supportsRtl="true"
-    ... />
+    android:supportsRtl="true">
+    <!-- ... demais atributos e componentes ... -->
+</application>
 ```
 
 **Benefícios:**
@@ -671,8 +681,9 @@ Os usuários devem exercer julgamento crítico ao abrir links."
 **Referência no AndroidManifest.xml:**
 ```xml
 <application
-    android:networkSecurityConfig="@xml/network_security_config"
-    ... />
+    android:networkSecurityConfig="@xml/network_security_config">
+    <!-- ... demais atributos e componentes ... -->
+</application>
 ```
 
 **Justificativa:**
@@ -826,16 +837,24 @@ keytool -list -v -keystore ~/.android/debug.keystore \
    - Package Name: `com.capsec.oatguard`
    - SHA-1 Fingerprint: Certificado de assinatura (veja passo abaixo)
 
-2. **Quando o app faz requisição:** Android envia metadados internos:
+2. **Quando o app faz requisição:** o app precisa enviar os headers:
    - `X-Android-Package: com.capsec.oatguard`
-   - `X-Android-Cert: <fingerprint_do_certificado>`
+   - `X-Android-Cert: <SHA-1 do certificado, hex maiúsculo sem ":">`
 
-3. **Google valida:** Se o pacote ou certificado não corresponderem, retorna `403 Forbidden`
+   ⚠️ **Correção (2026-09-28):** o Android **não** envia esses headers automaticamente em chamadas REST (OkHttp/Retrofit). Só as bibliotecas do Google Play Services fazem isso. O OatGuard os adiciona via `AndroidAppIdentityInterceptor`, que calcula o SHA-1 em runtime a partir do certificado que assinou o APK instalado (debug.keystore em dev, Play App Signing em release). Nenhum código muda entre os dois.
 
-**Resultado prático:**
-- ✅ Você chama a API com a chave → Funciona (certificado correto)
-- ❌ Alguém copia a chave e usa em `curl` → `403 Forbidden` (sem certificado Android)
-- ❌ Alguém copia a chave e usa em outro app → `403 Forbidden` (pacote/certificado diferente)
+3. **Google valida:** Se os headers estiverem ausentes ou o pacote/certificado não corresponderem, retorna `403 Forbidden`
+
+**Resultado prático (verificado com curl em 2026-09-28):**
+- ✅ App chama a API com a chave + headers → `200`
+- ❌ Chave usada sem os headers → `403 Forbidden`
+- ⚠️ **Limitação:** a restrição **não é criptográfica**. Os headers são texto e o SHA-1 do certificado é público (extraível de qualquer APK). Quem extrair a chave do APK *e* enviar os headers corretos consegue usá-la. A restrição é uma barreira contra uso casual, não uma garantia.
+
+**Mitigações que limitam o impacto de abuso:**
+- API restriction: chave só funciona na Safe Browsing API (sem acesso a APIs pagas)
+- Safe Browsing é gratuita: abuso consome cota, não gera custo
+- Monitorar uso em Google Cloud Console → APIs & Services → Safe Browsing → Metrics; se houver abuso, rotacionar (Passo 4)
+- Opcional: definir um limite de cota por minuto/dia abaixo do padrão, para que abuso não esgote a cota dos usuários reais
 
 ### Passo 3: Cadastrar SHA-1 Fingerprints (OBRIGATÓRIO)
 
@@ -1048,7 +1067,46 @@ Isso permite ao QA testar todos os estados visuais da ResultScreen gerando QR co
 ### 10.4 Pendências reais para Semana 2 e 3 (nada bloqueado no código)
 - Criar projeto "capsec-oatguard" no Google Cloud Console + habilitar Safe Browsing API v4 (seção 6.2, Passo 0).
 - Gerar API Key com restrição por Package Name + SHA-1 debug + API restriction (seção 6.2, Passo 1).
-- Preencher `SAFE_BROWSING_API_KEY` em `local.properties` — o app já troca automaticamente pra `RealSafeBrowsingRepository`, sem mudança de código.
+- Preencher `SAFE_BROWSING_API_KEY` em `local.properties` — o app já troca automaticamente pra `RealSafeBrowsingRepository`. ⚠️ Na prática foi necessária uma mudança de código (headers Android — ver seção 11).
 - Testar em device/emulador físico com a API real (câmera real, permissões em runtime, redirecionamentos reais via `URLResolver`).
 - Semana 3: SHA-1 de release (Play Console), submissão à Play Store, publicação do repositório no GitHub (MIT License).
 - Ainda não testado neste ambiente: fluxo de câmera real (sem emulador/dispositivo conectado durante a implementação) — apenas o build de compilação foi verificado.
+
+> ✅ Itens de Google Cloud + chave concluídos em 2026-09-28 — ver seção 11.
+
+---
+
+## 11. Registro de Implementação — Semana 2, Fase 1: API Real (Claude Code, 2026-09-28)
+
+Executado conforme `oatguard-prompt-api-real.md`. Build verificado: `./gradlew clean assembleDebug` → `BUILD SUCCESSFUL` (único warning: `@OptIn(ExperimentalGetImage)` em `QRScannerScreen.kt`, preexistente e inofensivo).
+
+### 11.1 Estado encontrado
+A maior parte do prompt já estava implementada na Semana 1: `RealSafeBrowsingRepository`, request/response models, `SafeBrowsingService`, `URLResolver` e a troca automática Mock→Real via `SafeBrowsingRepositoryProvider`. A arquitetura existente foi mantida em vez de aplicar os snippets do prompt:
+- **Textos via string resources** (`ThreatScoreMapper`) em vez de mensagens PT hardcoded: mantém os 7 idiomas.
+- **Erro de rede/API → tela de erro** (`UiState.Error`) em vez de um "score 50 amarelo": exibir score quando não houve validação seria enganoso (seção 6.0.7).
+- **`ANY_PLATFORM`** em vez de `ANDROID` (seção 5.1).
+
+### 11.2 Problemas encontrados e corrigidos
+1. **403 garantido na API real.** A premissa de que "o Android envia `X-Android-Package`/`X-Android-Cert` automaticamente" era falsa para chamadas OkHttp. Novo arquivo `data/api/AndroidAppIdentityInterceptor.kt`:
+   - `X-Android-Package` = `context.packageName`
+   - `X-Android-Cert` = SHA-1 (hex maiúsculo sem ":") do certificado de assinatura, lido via `PackageManager` (`GET_SIGNING_CERTIFICATES` no API 28+ com suporte a key rotation; `GET_SIGNATURES` no API 24–27)
+2. **SHA-1 debug com erro de digitação na documentação.** O diário registrava 41 caracteres (`…9441992EF…`). O valor real, conferido com `keytool`, é `89358E7C17384F914E9F944192EFC9A28AE17A64`. O valor cadastrado no Google Cloud estava correto.
+
+### 11.3 Mudanças de código
+- `SafeBrowsingClient`: de `object` com `service` lazy → `create(context)`, que adiciona o interceptor.
+- `SafeBrowsingRepositoryProvider.create(context)`; `RealSafeBrowsingRepository` recebe o `service` por parâmetro.
+- `QRValidatorViewModel`: criado via `QRValidatorViewModel.Factory` (`viewModelFactory` + `APPLICATION_KEY`); `Navigation.kt` usa `viewModel(factory = QRValidatorViewModel.Factory)`. Ainda sem Application class própria.
+- Log de exceções de rede/API só em build debug (`Log.w`, tag `QRValidatorViewModel`), para diagnosticar 403/timeout nos testes em hardware.
+
+### 11.4 Verificação contra a API real (curl, mesmos headers do app)
+| URL | Resultado |
+|---|---|
+| `https://www.google.com/` | `200` — `{}` (nenhuma ameaça conhecida) |
+| `http://malware.testing.google.test/testing/malware/` | `200` — `MALWARE` |
+| `http://testsafebrowsing.appspot.com/s/phishing.html` | `200` — `SOCIAL_ENGINEERING` |
+| Qualquer URL **sem** headers Android | `403` |
+
+### 11.5 Pendências
+- Testes em device/emulador (câmera real + API real). Usar QR codes com as URLs de teste da tabela 11.4.
+- Testar `URLResolver` com encurtador real (bit.ly/tinyurl).
+- Semana 3: adicionar SHA-1 do Play App Signing no Google Cloud. O interceptor já envia o SHA-1 correto em release, sem mudança de código.

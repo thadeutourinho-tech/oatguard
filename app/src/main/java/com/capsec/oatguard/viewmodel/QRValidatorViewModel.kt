@@ -1,7 +1,12 @@
 package com.capsec.oatguard.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.capsec.oatguard.BuildConfig
 import com.capsec.oatguard.R
 import com.capsec.oatguard.data.repository.SafeBrowsingRepository
 import com.capsec.oatguard.data.repository.SafeBrowsingRepositoryProvider
@@ -21,7 +26,7 @@ sealed interface UiState {
 }
 
 class QRValidatorViewModel(
-    private val repository: SafeBrowsingRepository = SafeBrowsingRepositoryProvider.create()
+    private val repository: SafeBrowsingRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
@@ -38,10 +43,13 @@ class QRValidatorViewModel(
         viewModelScope.launch {
             _uiState.value = try {
                 UiState.Success(repository.checkUrl(sanitizedUrl))
-            } catch (_: IOException) {
-                // Sem conexão ou timeout — mesma causa raiz (rede indisponível) na Semana 1.
+            } catch (e: IOException) {
+                // Sem conexão ou timeout — mesma causa raiz (rede indisponível).
+                logDebug(e)
                 UiState.Error(R.string.error_no_internet)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                // Inclui HttpException (ex.: 403 se package/SHA-1 não batem com a restrição da API key).
+                logDebug(e)
                 UiState.Error(R.string.error_api_unavailable)
             }
         }
@@ -50,5 +58,19 @@ class QRValidatorViewModel(
     /** Volta pro estado inicial — usado ao navegar de volta pra HomeScreen/Scanner. */
     fun reset() {
         _uiState.value = UiState.Idle
+    }
+
+    private fun logDebug(e: Exception) {
+        if (BuildConfig.DEBUG) Log.w(TAG, "Falha ao validar URL", e)
+    }
+
+    companion object {
+        private const val TAG = "QRValidatorViewModel"
+
+        val Factory = viewModelFactory {
+            initializer {
+                QRValidatorViewModel(SafeBrowsingRepositoryProvider.create(this[APPLICATION_KEY]!!))
+            }
+        }
     }
 }

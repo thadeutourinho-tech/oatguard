@@ -29,7 +29,7 @@ object Routes {
  */
 @Composable
 fun Navigation(navController: NavHostController = rememberNavController()) {
-    val qrValidatorViewModel: QRValidatorViewModel = viewModel()
+    val qrValidatorViewModel: QRValidatorViewModel = viewModel(factory = QRValidatorViewModel.Factory)
 
     NavHost(navController = navController, startDestination = Routes.SPLASH) {
         composable(Routes.SPLASH) {
