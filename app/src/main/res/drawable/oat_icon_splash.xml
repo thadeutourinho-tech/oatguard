@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    O ícone da splash (API 31+) é recortado em um círculo que ocupa ~2/3 da área.
+    O inset mantém o cadeado e o "O" do oat_icon inteiros dentro da máscara.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/oat_icon"
+    android:inset="18%" />

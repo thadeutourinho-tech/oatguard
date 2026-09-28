@@ -1,14 +1,15 @@
 # OatGuard — Validador de QR Code
 
-**Status:** ✅ SEMANA 1 IMPLEMENTADA + ✅ API REAL INTEGRADA (Semana 2 Fase 1) + ✅ CORREÇÕES DE UI DO TESTE EM DEVICE — próximo: revalidar no device  
+**Status:** ✅ SEMANA 1 IMPLEMENTADA + ✅ API REAL INTEGRADA (Semana 2 Fase 1) + ✅ CORREÇÕES DE UI DO TESTE EM DEVICE + ✅ AAB DE RELEASE ASSINADO — próximo: revalidar no device  
 **Criado:** 2026-09-25  
 **Última atualização:** 2026-09-28  
 **Package:** `com.capsec.oatguard`  
 **GitHub:** https://github.com/thadeutourinho-tech/oatguard (Public, MIT License)  
-**Build:** ✅ BUILD SUCCESSFUL (app-debug.apk com chave real, 2026-09-28)  
+**Build:** ✅ BUILD SUCCESSFUL (app-debug.apk com chave real + app-release.aab assinado, 2026-09-28)  
 **Google Cloud:** ✅ Projeto "capsec-oatguard" + Safe Browsing API v4 + API Key  
 **SHA-1 Debug:** `89358E7C17384F914E9F944192EFC9A28AE17A64`  
-**Especificação Completa:** `oatguard-especificacao.md` (v1.3)
+**SHA-1 Upload (release):** `F5A1F9441EA122F452D93F0DA6221F281C3F3025`  
+**Especificação Completa:** `oatguard-especificacao.md` (v1.4)
 
 ---
 
@@ -306,6 +307,29 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 
 ---
 
+### Sessão 3c: Keystore de release + AAB assinado (CONCLUÍDA 2026-09-28)
+**Executor:** Claude Code
+
+#### ✅ Concluído:
+- [x] Keystore `keystore/oatguard-release.jks` (RSA 2048, 30 anos, alias `oatguard-release`, DN CapSEC Brasil / CapSEC Consultoria / Rio de Janeiro-RJ-BR)
+- [x] Senha aleatória em `local.properties` (`release.*`) + salva no cofre de senhas corporativo
+- [x] `.gitignore`: `/keystore/`, `*.jks`, `*.keystore`
+- [x] `app/build.gradle.kts`: `signingConfigs.release` (lê `local.properties`) + `proguardFiles` + `app/proguard-rules.pro` (vazio)
+- [x] `./gradlew signingReport` → release usa o keystore novo
+- [x] `./gradlew bundleRelease` → BUILD SUCCESSFUL, `app-release.aab` (~20 MB) assinado, com SHA-1 conferido na assinatura do AAB
+- [x] SHA-1 de upload documentado (`README_DESENVOLVIMENTO.md`, especificação seção 13)
+
+**Decisões:**
+- Senhas **ficam em `local.properties`**, sem variáveis de ambiente. Só há uma máquina de build, e a senha já está no cofre.
+- R8 continua desligado (`optimization.enable = false`). Ligar exige regras de keep para Retrofit/Gson e testes no device. É por isso que o AAB tem ~20 MB, e não 10–15 MB.
+
+**Atenção:** o SHA-1 acima é da chave de **upload**. O app instalado pela Play é assinado de novo com a chave do Play App Signing, e o interceptor envia o SHA-1 dela, então esse SHA-1 também precisa estar no Google Cloud (Sessão 6).
+
+#### ⏳ Pendente:
+- [ ] Backup do arquivo `keystore/oatguard-release.jks` no cofre (a senha já está lá)
+
+---
+
 ### Sessão 4: Testes Hardware (SEMANA 2 — Fase 2 — Planejado)
 - [ ] Instalar APK debug em device/emulador
 - [ ] QR com URL limpa → verde (100); URLs de teste do Google → vermelho (MALWARE 20 / PHISHING 30)
@@ -320,8 +344,11 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 - [ ] Data Safety declaration preenchida
 
 ### Sessão 6: Release (SEMANA 3)
-- [ ] SHA-1 de release extraído (Play Console → App Signing)
-- [ ] SHA-1 release adicionado ao Google Cloud
+- [x] Keystore de upload + `app-release.aab` assinado (Sessão 3c)
+- [ ] SHA-1 de upload adicionado ao Google Cloud (para testar o release local)
+- [ ] Upload do AAB no Play Console (internal testing)
+- [ ] SHA-1 do Play App Signing extraído (Play Console → Integridade do app → Assinatura de apps)
+- [ ] SHA-1 do Play App Signing adicionado ao Google Cloud
 - [ ] Play Console setup finalizado
 - [ ] Internal testing release
 - [ ] Submit pra review
@@ -401,7 +428,8 @@ Use of the logo in derivative works requires permission.
 - ⏳ Testes em device/emulador com API real
 
 ### Semana 3: Play Store + GitHub
-- SHA-1 release adicionado ao Google Cloud
+- ✅ Keystore de upload + AAB de release assinado (2026-09-28)
+- SHA-1 do Play App Signing adicionado ao Google Cloud
 - GitHub público com MIT License
 - Play Store release
 - Result: App em produção + comunidade

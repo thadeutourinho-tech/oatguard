@@ -53,8 +53,11 @@ App Android B2C (gratuito) que valida QR codes via Google Safe Browsing API. Usu
 
 ### SHA-1 Fingerprints
 - **Debug:** Gerar com `keytool -list -v -keystore ~/.android/debug.keystore`
-- **Release:** Extrair de Play Console (App signing)
-- **Google Cloud:** Registra ambos
+- **Upload (release local):** `F5:A1:F9:44:1E:A1:22:F4:52:D9:3F:0D:A6:22:1F:28:1C:3F:30:25`
+  - Keystore `keystore/oatguard-release.jks`, alias `oatguard-release`, válido até 2056 (senhas em `local.properties`)
+  - Conferir com `./gradlew signingReport` (variante `release`)
+- **App signing (Play):** Extrair de Play Console > Integridade do app > Assinatura de apps (Google re-assina o AAB com esta chave — é a que roda nos aparelhos)
+- **Google Cloud:** Registrar debug + upload + app signing do Play
 
 ---
 
@@ -108,7 +111,8 @@ App Android B2C (gratuito) que valida QR codes via Google Safe Browsing API. Usu
 - ✅ INPI: Zero ações adicionais (logo Oat já registrado)
 
 ### Pontos em Aberto (TBD)
-- [ ] SHA-1 release (gerado no Play Console, Semana 3)
+- [x] SHA-1 upload/release local (`F5:A1:F9:…:30:25`)
+- [ ] SHA-1 app signing (gerado no Play Console, Semana 3)
 - [ ] Descrição Play Store (copy oficial)
 - [ ] GitHub repo (quando público)
 

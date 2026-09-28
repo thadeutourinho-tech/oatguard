@@ -1,8 +1,8 @@
 # OatGuard — Especificação Técnica Completa
 
-**Versão:** 1.3  
+**Versão:** 1.4  
 **Data:** 2026-09-26 (atualizado 2026-09-28)  
-**Status:** ✅ Semana 1 implementada + ✅ Semana 2 Fase 1 (API real integrada) + ✅ Correções de UI do teste em device — ver seções 10, 11 e 12 "Registro de Implementação"
+**Status:** ✅ Semana 1 implementada + ✅ Semana 2 Fase 1 (API real integrada) + ✅ Correções de UI do teste em device + ✅ Keystore de release e AAB assinado — ver seções 10 a 13 "Registro de Implementação"
 
 ---
 
@@ -456,7 +456,8 @@ A Google Safe Browsing API v4 recebe a chave via query parameter (?key=...). Com
    - Selecionar "Android apps"
    - Adicionar Package Name: `com.capsec.oatguard`
    - Adicionar SHA-1 Fingerprint **de debug** (pra desenvolvimento)
-   - Adicionar SHA-1 Fingerprint **de release** (pra Play Store - será gerado depois)
+   - Adicionar SHA-1 Fingerprint **de upload** (release local, `F5:A1:F9:44:1E:A1:22:F4:52:D9:3F:0D:A6:22:1F:28:1C:3F:30:25` — seção 13)
+   - Adicionar SHA-1 Fingerprint **do Play App Signing** (pra Play Store — disponível após o primeiro upload)
 
 2. **Restrição de API (API Restriction):**
    - Seção "API restrictions"
@@ -470,8 +471,13 @@ Debug (desenvolvimento local):
 keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android | grep SHA1
 ```
 
-Release (Play Console - depois):
-- Google Play Console → App signing → Certificados → Copiar SHA-1
+Upload / release local (keystore do projeto — seção 13):
+```bash
+./gradlew signingReport   # variante "release"
+```
+
+Play App Signing (após o primeiro upload do AAB):
+- Google Play Console → Integridade do app → Assinatura de apps → Copiar SHA-1 da "chave de assinatura do app"
 
 **Resultado:** Mesmo que a chave seja extraída do APK, ela funcionará APENAS:
 - No package `com.capsec.oatguard`
@@ -759,7 +765,8 @@ O OatGuard funciona em modelo **100% stateless client-to-Google**:
    - Tipo: Android apps
    - Package name: `com.capsec.oatguard`
    - SHA-1 Fingerprint de debug (ver comando abaixo)
-   - **IMPORTANTE:** Adicionar SHA-1 de release DEPOIS (quando certificado for gerado no Play Console)
+   - SHA-1 de upload (release local): `F5:A1:F9:44:1E:A1:22:F4:52:D9:3F:0D:A6:22:1F:28:1C:3F:30:25` (seção 13)
+   - **IMPORTANTE:** Adicionar SHA-1 do Play App Signing DEPOIS (gerado no Play Console após o primeiro upload)
 6. **API Restrictions:**
    - Custom → Restrict to APIs
    - Selecionar APENAS "Safe Browsing API"
@@ -1171,3 +1178,57 @@ O plano original previa `.padding(WindowInsets.systemBars.asPaddingValues())` na
 - **Duas splashes em sequência:** a do sistema e a `SplashScreen` Compose (`Routes.SPLASH`, 2s). Se ficar redundante, remover a rota Compose e segurar a splash do sistema com `setKeepOnScreenCondition`.
 - **Ícone do launcher:** `oat_icon` é PNG simples, não adaptive icon. Alguns launchers o mostram menor, dentro de uma forma branca. Se ficar ruim, gerar um adaptive icon pelo Image Asset do Android Studio.
 - **Tamanho do logo na splash:** se ficar pequeno ou cortado, ajustar `android:inset` em `oat_icon_splash.xml`.
+
+---
+
+## 13. Registro de Implementação — Keystore de release e AAB assinado (Claude Code, 2026-09-28)
+
+Build verificado: `./gradlew bundleRelease` → `BUILD SUCCESSFUL`. Gera `app/build/outputs/bundle/release/app-release.aab` (~20 MB), assinado com o certificado de release. O SHA-1 extraído da assinatura do AAB bate com o do keystore.
+
+### 13.1 Certificado de upload
+| Campo | Valor |
+|---|---|
+| Arquivo | `keystore/oatguard-release.jks` (PKCS12) |
+| Alias | `oatguard-release` |
+| Algoritmo | RSA 2048 |
+| Validade | 10950 dias (até 2056-09-20) |
+| DN | `CN=CapSEC Brasil, OU=Development, O=CapSEC Consultoria, L=Rio de Janeiro, ST=RJ, C=BR` |
+| SHA-1 | `F5:A1:F9:44:1E:A1:22:F4:52:D9:3F:0D:A6:22:1F:28:1C:3F:30:25` |
+| SHA-256 | `D8:AC:C3:D4:1A:64:33:E3:70:24:94:F0:0D:71:92:1C:0D:D2:11:4D:35:68:C9:B2:AD:03:91:31:B3:FE:E8:A5` |
+
+- **Senha:** aleatória de 32 caracteres, a mesma para keystore e chave. Fica em `local.properties` e no cofre de senhas corporativo.
+- **Nada disso vai para o Git:** `local.properties` já estava no `.gitignore`; foram adicionados `/keystore/`, `*.jks` e `*.keystore`.
+- **Decisão:** as senhas continuam em `local.properties`, sem variáveis de ambiente. Só há uma máquina de build, e a senha está no cofre.
+
+### 13.2 Configuração de assinatura (`app/build.gradle.kts`)
+```kotlin
+signingConfigs {
+    create("release") {
+        localProperties.getProperty("release.store.file")?.let { storeFile = rootProject.file(it) }
+        storePassword = localProperties.getProperty("release.store.password")
+        keyAlias = localProperties.getProperty("release.key.alias")
+        keyPassword = localProperties.getProperty("release.key.password")
+    }
+}
+```
+- `local.properties` passou a ser lido uma única vez (`localProperties`), atendendo tanto a `SAFE_BROWSING_API_KEY` quanto às chaves `release.*`.
+- `release` usa `signingConfig = signingConfigs.getByName("release")`.
+- `proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")` foi adicionado, e `app/proguard-rules.pro` (novo) começa vazio. Não tem efeito por enquanto: `optimization.enable = false` foi mantido.
+
+### 13.3 Chave de upload × chave de assinatura do app
+AAB na Play Store usa o **Play App Signing**: o Google assina de novo o app com a chave dele. O `AndroidAppIdentityInterceptor` envia em `X-Android-Cert` o SHA-1 do certificado com que o app instalado foi assinado. Por isso, a API key precisa de três SHA-1 no Google Cloud:
+
+| Certificado | Onde vale | SHA-1 |
+|---|---|---|
+| Debug | `installDebug` | `89358E7C17384F914E9F944192EFC9A28AE17A64` |
+| Upload (este keystore) | release instalado localmente | `F5:A1:F9:44:1E:A1:22:F4:52:D9:3F:0D:A6:22:1F:28:1C:3F:30:25` |
+| Play App Signing | app instalado pela Play Store | pegar no Play Console após o primeiro upload |
+
+### 13.4 Arquivos alterados
+`app/build.gradle.kts`, `app/proguard-rules.pro` (novo), `.gitignore`, `README_DESENVOLVIMENTO.md` (seção SHA-1). `local.properties` e `keystore/` foram alterados, mas não são versionados.
+
+### 13.5 Pendências / pontos de atenção
+- **Backup do `keystore/oatguard-release.jks`:** guardar o arquivo no cofre, junto com a senha. Se a chave de upload se perder, é preciso pedir a troca ao suporte da Play.
+- **Tamanho do AAB (~20 MB):** acima dos 10–15 MB esperados, porque o R8 está desligado e ML Kit + CameraX trazem bibliotecas nativas. O download real é menor, já que a Play divide o AAB por dispositivo. Ligar o R8 exige regras de keep para Retrofit/Gson e testes no device.
+- Cadastrar o SHA-1 de upload no Google Cloud se for testar o release localmente.
+- Após o primeiro upload: cadastrar o SHA-1 do Play App Signing no Google Cloud.

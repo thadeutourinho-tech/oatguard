@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Tema de lançamento (Splash Screen API / androidx.core:core-splashscreen).
+        Após installSplashScreen(), a Activity troca para postSplashScreenTheme.
+        Atributos sem prefixo "android:" são os da lib de compat (funcionam de API 24 a 37).
+    -->
+    <style name="SplashScreenTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/oat_icon_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.OatGuard</item>
+    </style>
+</resources>

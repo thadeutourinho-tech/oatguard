@@ -7,14 +7,12 @@ plugins {
 
 // Chave da Google Safe Browsing API, lida de local.properties (NUNCA hardcoded/commitada).
 // Semana 1: vazia -> app usa MockSafeBrowsingRepository. Semana 2: chave real -> uso real da API.
-val safeBrowsingApiKey: String = rootProject.file("local.properties").let { file ->
-    if (file.exists()) {
-        val properties = Properties().apply {
-            load(file.inputStream())
-        }
-        properties.getProperty("SAFE_BROWSING_API_KEY", "")
-    } else ""
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
 }
+
+val safeBrowsingApiKey: String = localProperties.getProperty("SAFE_BROWSING_API_KEY", "")
 
 android {
     namespace = "com.capsec.oatguard"
@@ -34,8 +32,23 @@ android {
         buildConfigField("String", "SAFE_BROWSING_API_KEY", "\"$safeBrowsingApiKey\"")
     }
 
+    // Credenciais de assinatura lidas de local.properties (NUNCA commitadas).
+    signingConfigs {
+        create("release") {
+            localProperties.getProperty("release.store.file")?.let { storeFile = rootProject.file(it) }
+            storePassword = localProperties.getProperty("release.store.password")
+            keyAlias = localProperties.getProperty("release.key.alias")
+            keyPassword = localProperties.getProperty("release.key.password")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             optimization {
                 enable = false
             }
