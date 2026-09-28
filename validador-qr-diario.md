@@ -262,6 +262,12 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 - [x] Chave validada via curl contra a API real: URL limpa → `{}`; URLs de teste do Google → MALWARE / SOCIAL_ENGINEERING
 - [x] SHA-1 do diário corrigido (tinha 41 chars; valor real conferido com keytool)
 - [x] `oatguard-especificacao.md` atualizada para v1.2 (seção 11 + correções em 5.1 e Passo 2.5)
+- [x] Avisos da IDE tratados (detalhes: especificação, seção 11.5):
+   - `SafeBrowsingRepository.kt`: `delay` com `Long` → `Duration` (`800.milliseconds`)
+   - Especificação: exemplos de `AndroidManifest.xml` com `... />` (XML inválido) corrigidos; exemplo `if`/`else` vazio trocado por código real do interceptor
+   - Regra adotada: blocos de código nos `.md` devem ser sintaticamente válidos (a IDE os analisa)
+   - Restante (inofensivo): `@OptIn(ExperimentalGetImage)` sem efeito em `QRScannerScreen.kt:242`
+   - Build após correções: ✅ BUILD SUCCESSFUL
 
 **Arquivos alterados:** `data/api/AndroidAppIdentityInterceptor.kt` (novo), `data/api/SafeBrowsingClient.kt`, `data/repository/SafeBrowsingRepository.kt`, `viewmodel/QRValidatorViewModel.kt`, `ui/navigation/Navigation.kt`
 

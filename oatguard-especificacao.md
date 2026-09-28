@@ -1106,7 +1106,22 @@ A maior parte do prompt já estava implementada na Semana 1: `RealSafeBrowsingRe
 | `http://testsafebrowsing.appspot.com/s/phishing.html` | `200` — `SOCIAL_ENGINEERING` |
 | Qualquer URL **sem** headers Android | `403` |
 
-### 11.5 Pendências
+### 11.5 Limpeza de avisos da IDE (2026-09-28)
+Avisos apontados pela inspeção do Android Studio. Nenhum afetava o build.
+
+| Arquivo | Aviso | Correção |
+|---|---|---|
+| `SafeBrowsingRepository.kt:61` | "Legacy Long overload can be converted to Duration" | `delay(MOCK_LATENCY_MS)` com `800L` → `delay(MOCK_LATENCY)` com `800.milliseconds` (`kotlin.time.Duration`). Mesmo comportamento. |
+| `oatguard-especificacao.md` (seção 3.5) | "'if'/'else' has empty body" | Exemplo genérico com `if`/`else` só com comentários trocado pelo trecho real do `AndroidAppIdentityInterceptor` (API 28+ vs. API 24–27). |
+| `oatguard-especificacao.md` (seções 3.6, 6.0.5, 6.0.8) | "Tag start is not closed" | Exemplos de `AndroidManifest.xml` terminavam em `... />` (XML inválido). Agora fecham com `</application>` e usam `<!-- ... demais atributos e componentes ... -->`. |
+
+Por que blocos de Markdown geram erros: o Android Studio analisa os blocos de código (```` ```kotlin ````, ```` ```xml ````) como código de verdade. Regra para este documento: exemplos devem ser sintaticamente válidos, com reticências só dentro de comentários.
+
+Aviso restante, conhecido e inofensivo: `QRScannerScreen.kt:242`. `@OptIn(ExperimentalGetImage)` não tem efeito porque a anotação do CameraX não usa `@RequiresOptIn`.
+
+Build após as correções: `./gradlew assembleDebug` → `BUILD SUCCESSFUL`.
+
+### 11.6 Pendências
 - Testes em device/emulador (câmera real + API real). Usar QR codes com as URLs de teste da tabela 11.4.
 - Testar `URLResolver` com encurtador real (bit.ly/tinyurl).
 - Semana 3: adicionar SHA-1 do Play App Signing no Google Cloud. O interceptor já envia o SHA-1 correto em release, sem mudança de código.
