@@ -1,6 +1,6 @@
 # OatGuard — Validador de QR Code
 
-**Status:** ✅ SEMANA 1 IMPLEMENTADA + ✅ API REAL INTEGRADA (Semana 2 Fase 1) — próximo: testes em hardware  
+**Status:** ✅ SEMANA 1 IMPLEMENTADA + ✅ API REAL INTEGRADA (Semana 2 Fase 1) + ✅ CORREÇÕES DE UI DO TESTE EM DEVICE — próximo: revalidar no device  
 **Criado:** 2026-09-25  
 **Última atualização:** 2026-09-28  
 **Package:** `com.capsec.oatguard`  
@@ -8,7 +8,7 @@
 **Build:** ✅ BUILD SUCCESSFUL (app-debug.apk com chave real, 2026-09-28)  
 **Google Cloud:** ✅ Projeto "capsec-oatguard" + Safe Browsing API v4 + API Key  
 **SHA-1 Debug:** `89358E7C17384F914E9F944192EFC9A28AE17A64`  
-**Especificação Completa:** `oatguard-especificacao.md` (v1.2)
+**Especificação Completa:** `oatguard-especificacao.md` (v1.3)
 
 ---
 
@@ -276,6 +276,33 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 #### ⏳ Próximos passos:
 - [ ] Testes em device/emulador físico (URLs de teste: `http://malware.testing.google.test/testing/malware/`, `http://testsafebrowsing.appspot.com/s/phishing.html`)
 - [ ] Teste de redirecionamentos (URLResolver) com encurtador real
+
+---
+
+### Sessão 3b: Correções de UI do primeiro teste em device (CONCLUÍDA 2026-09-28)
+**Executor:** Claude Code  
+**Origem:** 3 problemas vistos no primeiro teste em device real
+
+#### ✅ Correções:
+- [x] **Ícone do app:** launcher mostrava o ícone padrão do Android → `android:icon`/`roundIcon` = `@drawable/oat_icon`
+- [x] **Splash padrão do Android → Splash Screen API:** `core-splashscreen:1.0.1` + `SplashScreenTheme` (`res/values/styles.xml`, parent `Theme.SplashScreen`, fundo branco, `postSplashScreenTheme` = `Theme.OatGuard`) + `installSplashScreen()` antes de `super.onCreate()`
+- [x] **Logo da splash com margem:** `res/drawable/oat_icon_splash.xml` (inset 18%), porque o Android 12+ recorta o ícone em círculo
+- [x] **Header sob a status bar:** `OatHeader.kt` ganhou `.windowInsetsPadding(WindowInsets.statusBars)` → corrige Home e Result
+- [x] `./gradlew clean assembleDebug` → BUILD SUCCESSFUL
+- [x] `oatguard-especificacao.md` atualizada para v1.3 (seção 12)
+
+**Arquivos alterados:** `gradle/libs.versions.toml`, `app/build.gradle.kts`, `AndroidManifest.xml`, `res/values/styles.xml` (novo), `res/drawable/oat_icon_splash.xml` (novo), `MainActivity.kt`, `ui/components/OatHeader.kt`
+
+**Decisões (desvios do plano):**
+- Padding de insets **no `OatHeader`, não na `Column` das telas:** o header é o `topBar` do `Scaffold`, então padding na `Column` não o moveria, e o `innerPadding` já traz os insets (duplicaria o espaço no rodapé). `QRScannerScreen` não mudou: o `TopAppBar` do Material3 já trata a status bar
+- Sem `windowBackground` transparente no tema da splash (risco de janela transparente); `Theme.SplashScreen` já cuida do fundo
+- Dependência registrada no version catalog (`libs.androidx.core.splashscreen`)
+
+#### ⏳ Validar no device (`./gradlew installDebug`):
+- [ ] Ícone OatGuard no launcher (PNG simples, não adaptive: alguns launchers o mostram menor dentro de uma forma branca → se ficar ruim, gerar adaptive icon pelo Image Asset)
+- [ ] Splash com o logo Oat (se ficar pequeno/cortado, ajustar o inset em `oat_icon_splash.xml`)
+- [ ] Header abaixo da status bar em Home e Result
+- [ ] Avaliar as duas splashes em sequência (sistema + `SplashScreen` Compose de 2s); se redundante, remover a rota Compose e usar `setKeepOnScreenCondition`
 
 ---
 
