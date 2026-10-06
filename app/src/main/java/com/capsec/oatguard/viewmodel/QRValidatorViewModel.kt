@@ -11,6 +11,8 @@ import com.capsec.oatguard.R
 import com.capsec.oatguard.data.repository.SafeBrowsingRepository
 import com.capsec.oatguard.data.repository.SafeBrowsingRepositoryProvider
 import com.capsec.oatguard.data.repository.ValidationResult
+import com.capsec.oatguard.pix.PixDetectionResult
+import com.capsec.oatguard.pix.PixKeyDetector
 import com.capsec.oatguard.utils.URLValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +33,24 @@ class QRValidatorViewModel(
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState = _uiState.asStateFlow()
+
+    /** Chave PIX do último QR escaneado (null se não era PIX). Nunca logar a chave. */
+    private val _pixResult = MutableStateFlow<PixDetectionResult?>(null)
+    val pixResult = _pixResult.asStateFlow()
+
+    /**
+     * Ponto de entrada do QR escaneado. Chave PIX tem prioridade e não passa
+     * pelo Safe Browsing; o resto segue pra validação de URL.
+     *
+     * @return true se era chave PIX (navegar pra tela PIX), false se seguiu pra validação de URL.
+     */
+    fun onQrScanned(rawValue: String): Boolean {
+        val pix = PixKeyDetector.detect(rawValue)
+        _pixResult.value = pix
+        if (pix != null) return true
+        validateQRCode(rawValue)
+        return false
+    }
 
     fun validateQRCode(rawUrl: String) {
         val sanitizedUrl = URLValidator.sanitize(rawUrl)
@@ -58,6 +78,7 @@ class QRValidatorViewModel(
     /** Volta pro estado inicial — usado ao navegar de volta pra HomeScreen/Scanner. */
     fun reset() {
         _uiState.value = UiState.Idle
+        _pixResult.value = null
     }
 
     private fun logDebug(e: Exception) {

@@ -45,4 +45,28 @@
     <string name="info_button_description">Информация и конфиденциальность</string>
     <string name="content_description_logo">Логотип OatGuard</string>
     <string name="content_description_score">Оценка безопасности</string>
+
+    <!-- PIX -->
+    <string name="pix_title">ОБНАРУЖЕН КЛЮЧ PIX</string>
+    <string name="pix_detected_message">Мы определили, что этот QR-код является ключом PIX.</string>
+    <string name="pix_problem_message">Проблема в том, что мы не можем проверить, настоящий этот ключ или поддельный. Доступ к этой информации есть только у финансовых учреждений.</string>
+    <string name="pix_what_to_do">Что вам следует сделать:</string>
+    <string name="pix_tip_contact">Свяжитесь с поставщиком услуг для подтверждения</string>
+    <string name="pix_tip_check_document">Проверьте, совпадает ли CPF/CNPJ</string>
+    <string name="pix_tip_dont_pay">Если сомневаетесь — НЕ платите</string>
+    <string name="btn_copy_pix_key">КОПИРОВАТЬ КЛЮЧ PIX</string>
+    <string name="btn_back_to_camera">НАЗАД К КАМЕРЕ</string>
+    <string name="pix_key_copied">Ключ скопирован!</string>
+    <string name="pix_key_label">Ключ (%1$s): %2$s</string>
+    <string name="pix_dynamic_label">Платёжный QR-код PIX (динамический): ключ в коде не указан.</string>
+    <string name="btn_copy_pix_code">КОПИРОВАТЬ КОД PIX</string>
+    <string name="pix_code_copied">Код скопирован!</string>
+    <string name="pix_clip_label">Ключ PIX</string>
+    <string name="pix_type_cpf">CPF</string>
+    <string name="pix_type_cnpj">CNPJ</string>
+    <string name="pix_type_email">Эл. почта</string>
+    <string name="pix_type_phone">Телефон</string>
+    <string name="pix_type_evp">Случайный</string>
+    <string name="content_description_pix_warning">Внимание</string>
+    <string name="content_description_back">Назад</string>
 </resources>

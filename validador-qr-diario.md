@@ -1,8 +1,9 @@
 # OatGuard — Validador de QR Code
 
-**Status:** ✅ SEMANA 1 IMPLEMENTADA + ✅ API REAL INTEGRADA (Semana 2 Fase 1) + ✅ CORREÇÕES DE UI DO TESTE EM DEVICE + ✅ AAB DE RELEASE ASSINADO — próximo: revalidar no device  
+**Status:** ✅ SEMANA 1 IMPLEMENTADA + ✅ API REAL INTEGRADA (Semana 2 Fase 1) + ✅ CORREÇÕES DE UI DO TESTE EM DEVICE + ✅ AAB DE RELEASE ASSINADO + ✅ DETECÇÃO DE PIX (v1.0.1) — próximo: revalidar no device  
 **Criado:** 2026-09-25  
-**Última atualização:** 2026-09-28  
+**Última atualização:** 2026-10-06  
+**Versão:** 1.0.1 (versionCode 2)  
 **Package:** `com.capsec.oatguard`  
 **GitHub:** https://github.com/thadeutourinho-tech/oatguard (Public, MIT License)  
 **Build:** ✅ BUILD SUCCESSFUL (app-debug.apk com chave real + app-release.aab assinado, 2026-09-28)  
@@ -327,6 +328,27 @@ Baseado em feedback de análise de segurança (Google Gemini) + modelo client-si
 
 #### ⏳ Pendente:
 - [ ] Backup do arquivo `keystore/oatguard-release.jks` no cofre (a senha já está lá)
+
+---
+
+### Sessão 3d: Detecção de chave PIX — v1.0.1 (CONCLUÍDA 2026-10-06)
+**Executor:** Claude Code · **Prompt:** `oatguard-prompt-pix-detection.md`
+
+#### ✅ Concluído:
+- [x] `pix/PixKeyDetector`: CPF, CNPJ (incl. alfanumérico com DV), e-mail, telefone (+55), EVP; BR Code estático (extrai a chave) e dinâmico (`DynamicCode`, copia o "copia e cola")
+- [x] PIX é detectado **antes** do Safe Browsing; URLs (com `://`) nunca viram PIX
+- [x] `PixResultScreen` + `PixAlertCard` (âmbar, ícone + texto, sem depender só da cor), strings nos 7 idiomas
+- [x] 32 testes unitários (`PixKeyDetectorTest`); cobertura do detector: 100% linhas / 89% branches (`./gradlew :app:createDebugUnitTestCoverageReport`)
+- [x] Lint sem erros (corrigidos `UnsafeOptInUsageError` no scanner e `LocalContextGetResourceValueCall` no InfoButton)
+- [x] `versionName` 1.0.1 / `versionCode` 2; `clientVersion` do Safe Browsing agora vem de `BuildConfig.VERSION_NAME`
+
+**Decisões:**
+- 11 dígitos: CPF se o DV bate; senão telefone se parece celular (DDD + 9); senão CPF
+- Toast "Chave copiada!" só até Android 12 — no 13+ o sistema já confirma a cópia
+
+#### ⏳ Pendente:
+- [ ] Rodar `PixResultScreenTest` (`./gradlew :app:connectedDebugAndroidTest`) — emulador não subiu por falta de disco
+- [ ] Teste visual no device com QR PIX real (chave crua, BR Code estático e dinâmico)
 
 ---
 

@@ -45,4 +45,28 @@
     <string name="info_button_description">Información y privacidad</string>
     <string name="content_description_logo">Logo de OatGuard</string>
     <string name="content_description_score">Puntuación de seguridad</string>
+
+    <!-- PIX -->
+    <string name="pix_title">CLAVE PIX DETECTADA</string>
+    <string name="pix_detected_message">Identificamos que este código QR es una clave PIX.</string>
+    <string name="pix_problem_message">Este es el problema: no podemos verificar si esta clave es real o falsa. Solo las instituciones financieras tienen acceso a esa información.</string>
+    <string name="pix_what_to_do">Qué debes hacer:</string>
+    <string name="pix_tip_contact">Contacta al proveedor del servicio para confirmar</string>
+    <string name="pix_tip_check_document">Verifica que el CPF/CNPJ coincida</string>
+    <string name="pix_tip_dont_pay">Si tienes dudas, NO pagues</string>
+    <string name="btn_copy_pix_key">COPIAR CLAVE PIX</string>
+    <string name="btn_back_to_camera">VOLVER A LA CÁMARA</string>
+    <string name="pix_key_copied">¡Clave copiada!</string>
+    <string name="pix_key_label">Clave (%1$s): %2$s</string>
+    <string name="pix_dynamic_label">Código QR de cobro PIX (dinámico): la clave no aparece en el código.</string>
+    <string name="btn_copy_pix_code">COPIAR CÓDIGO PIX</string>
+    <string name="pix_code_copied">¡Código copiado!</string>
+    <string name="pix_clip_label">Clave PIX</string>
+    <string name="pix_type_cpf">CPF</string>
+    <string name="pix_type_cnpj">CNPJ</string>
+    <string name="pix_type_email">Correo</string>
+    <string name="pix_type_phone">Teléfono</string>
+    <string name="pix_type_evp">Aleatoria</string>
+    <string name="content_description_pix_warning">Atención</string>
+    <string name="content_description_back">Volver</string>
 </resources>

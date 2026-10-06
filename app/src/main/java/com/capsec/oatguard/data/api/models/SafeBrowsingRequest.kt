@@ -1,5 +1,6 @@
 package com.capsec.oatguard.data.api.models
 
+import com.capsec.oatguard.BuildConfig
 import com.google.gson.annotations.SerializedName
 
 /** Corpo do request para `POST v4/threatMatches:find` do Google Safe Browsing API. */
@@ -9,7 +10,7 @@ data class SafeBrowsingRequest(
 ) {
     data class Client(
         @SerializedName("clientId") val clientId: String = "com.capsec.oatguard",
-        @SerializedName("clientVersion") val clientVersion: String = "1.0.0"
+        @SerializedName("clientVersion") val clientVersion: String = BuildConfig.VERSION_NAME
     )
 
     data class ThreatInfo(

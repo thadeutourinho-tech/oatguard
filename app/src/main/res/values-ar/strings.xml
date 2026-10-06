@@ -45,4 +45,28 @@
     <string name="info_button_description">المعلومات والخصوصية</string>
     <string name="content_description_logo">شعار OatGuard</string>
     <string name="content_description_score">درجة الأمان</string>
+
+    <!-- PIX -->
+    <string name="pix_title">تم اكتشاف مفتاح PIX</string>
+    <string name="pix_detected_message">لقد تبيّن لنا أن رمز QR هذا هو مفتاح PIX.</string>
+    <string name="pix_problem_message">المشكلة هي: لا يمكننا التحقق مما إذا كان هذا المفتاح حقيقيًا أم مزيفًا. هذه المعلومات متاحة فقط للمؤسسات المالية.</string>
+    <string name="pix_what_to_do">ما يجب عليك فعله:</string>
+    <string name="pix_tip_contact">تواصل مع مقدم الخدمة للتأكيد</string>
+    <string name="pix_tip_check_document">تحقق من تطابق CPF/CNPJ</string>
+    <string name="pix_tip_dont_pay">عند الشك، لا تدفع</string>
+    <string name="btn_copy_pix_key">نسخ مفتاح PIX</string>
+    <string name="btn_back_to_camera">العودة إلى الكاميرا</string>
+    <string name="pix_key_copied">تم نسخ المفتاح!</string>
+    <string name="pix_key_label">المفتاح (%1$s): %2$s</string>
+    <string name="pix_dynamic_label">رمز QR لتحصيل دفعة PIX (ديناميكي): المفتاح لا يظهر في الرمز.</string>
+    <string name="btn_copy_pix_code">نسخ رمز PIX</string>
+    <string name="pix_code_copied">تم نسخ الرمز!</string>
+    <string name="pix_clip_label">مفتاح PIX</string>
+    <string name="pix_type_cpf">CPF</string>
+    <string name="pix_type_cnpj">CNPJ</string>
+    <string name="pix_type_email">البريد الإلكتروني</string>
+    <string name="pix_type_phone">الهاتف</string>
+    <string name="pix_type_evp">عشوائي</string>
+    <string name="content_description_pix_warning">تحذير</string>
+    <string name="content_description_back">رجوع</string>
 </resources>

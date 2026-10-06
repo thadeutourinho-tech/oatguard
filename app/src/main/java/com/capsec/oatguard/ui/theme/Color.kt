@@ -20,3 +20,8 @@ val OatWhite = Color(0xFFFFFFFF)
 val ScoreSafeGreen = Color(0xFF4CAF50)
 val ScoreSuspiciousYellow = Color(0xFFFFC107)
 val ScoreDangerRed = Color(0xFFF44336)
+
+// Alerta PIX — âmbar (atenção), nunca vermelho (que significa malware/perigo)
+val PixAlertBackground = Color(0xFFFFF3CD)
+val PixAlertBorder = Color(0xFFFFC107)
+val PixAlertText = Color(0xFF856404)

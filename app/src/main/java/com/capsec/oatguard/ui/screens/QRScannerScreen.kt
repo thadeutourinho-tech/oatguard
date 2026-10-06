@@ -239,7 +239,7 @@ private fun CameraPreview(onQrDetected: (String) -> Unit) {
     )
 }
 
-@OptIn(ExperimentalGetImage::class)
+@androidx.annotation.OptIn(ExperimentalGetImage::class)
 private fun processImageProxy(
     scanner: com.google.mlkit.vision.barcode.BarcodeScanner,
     imageProxy: ImageProxy,

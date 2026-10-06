@@ -6,6 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.capsec.oatguard.R
 import com.capsec.oatguard.utils.Constants
 import com.capsec.oatguard.utils.openUrl
@@ -24,7 +25,7 @@ fun InfoButton() {
     }) {
         Icon(
             imageVector = Icons.Default.Info,
-            contentDescription = context.getString(R.string.info_button_description)
+            contentDescription = stringResource(R.string.info_button_description)
         )
     }
 }

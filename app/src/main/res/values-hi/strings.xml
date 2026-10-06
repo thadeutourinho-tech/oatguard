@@ -45,4 +45,28 @@
     <string name="info_button_description">जानकारी और गोपनीयता</string>
     <string name="content_description_logo">OatGuard लोगो</string>
     <string name="content_description_score">सुरक्षा स्कोर</string>
+
+    <!-- PIX -->
+    <string name="pix_title">PIX कुंजी मिली</string>
+    <string name="pix_detected_message">हमने पहचाना कि यह QR कोड एक PIX कुंजी है।</string>
+    <string name="pix_problem_message">समस्या यह है: हम यह सत्यापित नहीं कर सकते कि यह कुंजी असली है या नकली। यह जानकारी केवल वित्तीय संस्थानों के पास होती है।</string>
+    <string name="pix_what_to_do">आपको क्या करना चाहिए:</string>
+    <string name="pix_tip_contact">पुष्टि के लिए सेवा प्रदाता से संपर्क करें</string>
+    <string name="pix_tip_check_document">जाँचें कि CPF/CNPJ मेल खाता है</string>
+    <string name="pix_tip_dont_pay">संदेह होने पर भुगतान न करें</string>
+    <string name="btn_copy_pix_key">PIX कुंजी कॉपी करें</string>
+    <string name="btn_back_to_camera">कैमरे पर वापस जाएँ</string>
+    <string name="pix_key_copied">कुंजी कॉपी हो गई!</string>
+    <string name="pix_key_label">कुंजी (%1$s): %2$s</string>
+    <string name="pix_dynamic_label">PIX भुगतान QR कोड (डायनामिक): कोड में कुंजी दिखाई नहीं देती।</string>
+    <string name="btn_copy_pix_code">PIX कोड कॉपी करें</string>
+    <string name="pix_code_copied">कोड कॉपी हो गया!</string>
+    <string name="pix_clip_label">PIX कुंजी</string>
+    <string name="pix_type_cpf">CPF</string>
+    <string name="pix_type_cnpj">CNPJ</string>
+    <string name="pix_type_email">ईमेल</string>
+    <string name="pix_type_phone">फ़ोन</string>
+    <string name="pix_type_evp">रैंडम</string>
+    <string name="content_description_pix_warning">चेतावनी</string>
+    <string name="content_description_back">वापस</string>
 </resources>

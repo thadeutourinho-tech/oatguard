@@ -45,4 +45,28 @@
     <string name="info_button_description">Information and privacy</string>
     <string name="content_description_logo">OatGuard logo</string>
     <string name="content_description_score">Safety score</string>
+
+    <!-- PIX -->
+    <string name="pix_title">PIX KEY DETECTED</string>
+    <string name="pix_detected_message">We identified that this QR Code is a PIX key.</string>
+    <string name="pix_problem_message">Here is the problem: we cannot verify whether this key is real or fake. Only financial institutions have access to that information.</string>
+    <string name="pix_what_to_do">What you should do:</string>
+    <string name="pix_tip_contact">Contact the service provider to confirm</string>
+    <string name="pix_tip_check_document">Check that the CPF/CNPJ matches</string>
+    <string name="pix_tip_dont_pay">When in doubt, DO NOT pay</string>
+    <string name="btn_copy_pix_key">COPY PIX KEY</string>
+    <string name="btn_back_to_camera">BACK TO CAMERA</string>
+    <string name="pix_key_copied">Key copied!</string>
+    <string name="pix_key_label">Key (%1$s): %2$s</string>
+    <string name="pix_dynamic_label">PIX payment QR Code (dynamic): the key does not appear in the code.</string>
+    <string name="btn_copy_pix_code">COPY PIX CODE</string>
+    <string name="pix_code_copied">Code copied!</string>
+    <string name="pix_clip_label">PIX key</string>
+    <string name="pix_type_cpf">CPF</string>
+    <string name="pix_type_cnpj">CNPJ</string>
+    <string name="pix_type_email">Email</string>
+    <string name="pix_type_phone">Phone</string>
+    <string name="pix_type_evp">Random</string>
+    <string name="content_description_pix_warning">Warning</string>
+    <string name="content_description_back">Back</string>
 </resources>
