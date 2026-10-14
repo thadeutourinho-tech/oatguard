@@ -1,116 +1,88 @@
-# OatGuard — QR Code Validator
+# OatGuard
 
-A free, open-source Android app that validates QR codes for security threats using Google Safe Browsing API.
+**Check a QR code before you open the link.**
 
-## 📱 Features
+OatGuard is a free, open-source Android app that scans a QR code and checks the link it contains against Google Safe Browsing before you open it. It has no ads, no account, no analytics and no backend run by CapSEC.
 
-- **QR Code Scanning:** Fast, accurate QR detection via ML Kit
-- **Security Validation:** Real-time threat detection powered by Google Safe Browsing
-- **Trust Score:** Visual feedback (0-100) with color-coded risk levels
-- **7 Languages:** Portuguese, English, Spanish, French, Russian, Hindi, Arabic
-- **No Backend:** 100% client-side, zero tracking, zero data collection
-- **Free Distribution:** Marketing tool for CapSEC information security consultancy
+Built by a Brazilian developer at [CapSEC](https://capsec.com.br), an information security consultancy.
 
-## 🚀 Quick Start
+[Português (BR)](README.pt-BR.md)
 
-### Prerequisites
-- Android 7.0+ (API 24)
+<a href="https://play.google.com/store/apps/details?id=com.capsec.oatguard">Get it on Google Play</a>
+
+## Why
+
+Scammers place fake QR codes over real ones (parking meters, menus, payment slips). The destination is only visible after you open the link. OatGuard shows you where the code leads and whether Google flags it, before you open anything.
+
+## Features
+
+- QR code scanning on the device (CameraX and ML Kit)
+- Link check against the Google Safe Browsing API
+- Trust score from 0 to 100 with color-coded risk levels
+- Recognizes PIX key QR codes (since v1.0.1) and handles them separately, without sending them to Safe Browsing
+- Seven languages
+- Free, no ads, no sign-up
+
+## Requirements
+
+- Android 7.0 (API 24) or later
 - Camera permission
-- Internet connection
+- Internet connection (needed for the Safe Browsing check)
 
-### Download
-- [Play Store](https://play.google.com/store/apps/details?id=com.capsec.oatguard) (coming soon)
-- [GitHub Releases](https://github.com/capsec-br/oatguard/releases)
+## Privacy
 
-### Build from Source
+- No account, no ads, no analytics.
+- CapSEC does not run a server for this app. It does not receive, collect or store the links you scan.
+- The app does not save scanned links on the device.
+- Scanning the QR code (camera and decoding) happens on your device.
+- To check a link, the app sends a request directly from your device to Google's Safe Browsing API, over HTTPS. Google handles that request under its own terms and privacy policy, and, as with any network request, can see your IP address.
+  - The app uses the Safe Browsing v4 Lookup API (`threatMatches:find`). The request contains the full link, including path and query string, after redirects have been followed. It is not reduced to hash prefixes.
+- Before the check, the app follows the link's redirects to find the final destination. To do this, your device sends an HTTP `HEAD` request to the scanned link and to each redirect it points to, including the final destination, up to a fixed maximum number of redirects and with a short timeout per request. These requests use OkHttp's default headers and no cookies. This means the server behind the link can see your IP address and that a request was made, even though you did not open the link.
+- If the QR code contains a PIX key or a PIX copy-and-paste code, the app does not send it to Safe Browsing. It opens a separate PIX screen, which can copy the key or code to the clipboard. [CONFIRM: is the copy done only when the user taps a button, and does the PIX screen make any network request?]
+- Requests carry the app's API key (restricted to this app by package name and signing certificate), not a user identifier.
+
+Full policy: https://www.capsec.com.br/oatguard/en/docs.html#privacy
+
+## What the result means
+
+- "No threat found" means Google Safe Browsing has no match for that link right now. It does not guarantee the destination is safe.
+- A new malicious link may not be listed yet.
+- Only HTTP redirects are followed. Redirects done with JavaScript or HTML meta refresh are not.
+- Only the final destination is checked against Safe Browsing, not the intermediate redirects.
+- A malicious server can answer the app's `HEAD` request differently from how it answers a browser.
+- Links written without `http://` or `https://` (for example `www.example.com`) are not checked. The app reports that no link was found.
+- PIX: OatGuard only recognizes the format of PIX keys and codes. It makes no network request for this, does not query the central PIX directory, and cannot tell whether a key exists or who owns it. It does not verify who receives the payment. For dynamic PIX codes, the charge URL at the payment provider is not checked against Safe Browsing. Always confirm the recipient in your bank app before paying.
+- The 0 to 100 score is not an independent analysis. It is a fixed mapping of the threat type returned by Google Safe Browsing: malware 20, social engineering (phishing) 30, unwanted software 45, potentially harmful application 50, and 100 when Google reports no known threat. If several threats are returned, the lowest score is shown. OatGuard does not add its own signals to this score.
+
+## Build from source
+
 ```bash
-git clone https://github.com/capsec-br/oatguard.git
+git clone https://github.com/thadeutourinho-tech/oatguard.git
 cd oatguard
 ./gradlew assembleDebug
 ```
 
-## 🔧 Technology Stack
+You need your own Safe Browsing API key. Put it in `local.properties` as `SAFE_BROWSING_API_KEY`.
 
-- **Language:** Kotlin
-- **UI:** Jetpack Compose
-- **Scanning:** ML Kit Vision + CameraX
-- **API Client:** Retrofit 2.11+ / OkHttp 4.12+
-- **JSON:** Gson
-- **Target:** Android 7.0+ (minSdk 24, targetSdk 37)
+Warning: if the key is empty, the app falls back to a mock that only looks for the words "malware", "phishing", "unwanted" or "harmful" in the link and reports every other link as having no known threat. It exists only for UI testing. Never distribute a build made without a key.
 
-## 🔐 Security & Privacy
+Stack: Kotlin, Jetpack Compose, CameraX with ML Kit, Retrofit and OkHttp, Gson.
 
-- **API Key Protection:** Restricted by package name + SHA-1 fingerprint (Google Cloud)
-- **HTTPS Only:** NetworkSecurityConfig enforces TLS 1.2+
-- **No Local Storage:** Stateless, no database, no cache
-- **No User Tracking:** All processing is local, API calls are anonymous
-- **Google Safe Browsing:** Powered by Google's threat intelligence
+## Status and roadmap
 
-### Attribution
-Malware protection provided by Google Safe Browsing. [Learn more](https://www.google.com/safebrowsing/).
+- Released on Google Play: v1.0.0 (QR scanning and Safe Browsing check) and v1.0.1 (PIX key detection).
+- Ideas under consideration: check links received from other apps through the share menu, a local-only scan history, short phishing education tips.
 
-## 📖 Documentation
+## Contributing
 
-- [Privacy Policy & Docs](https://www.capsec.com.br/oatguard/pt/docs.html)
-- [Technical Specification](./oatguard-especificacao.md)
-- [Development Journal](./validador-qr-diario.md)
+Issues and pull requests are welcome. Fork the repository, create a branch, commit your changes and open a pull request.
 
-## 🛣️ Roadmap
+## License
 
-### Semana 1 ✅ (MVP Delivered)
-- All UI screens (Splash, Home, Scanner, Result)
-- QR scanning with ML Kit
-- Mock Safe Browsing API
-- Multi-language support (7 languages)
-- Error handling
-- Build APK debug
+MIT. See [LICENSE](LICENSE).
 
-### Semana 2 (Hardware Testing)
-- Google Cloud API integration
-- Real API testing on device/emulator
-- Performance validation
+The "Oat" name and logo are trademarks of CapSEC. Using them in derivative works requires permission.
 
-### Semana 3 (Play Store Release)
-- Play Console submission
-- App signing + SHA-1 registration
-- Public release
+## Contact
 
-### Future (Post-MVP)
-- Firebase Analytics
-- Validation history
-- Educational content on phishing patterns
-- B2B integration for CapSEC clients
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-1. Fork this repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-OatGuard is released under the [MIT License](LICENSE). See LICENSE file for details.
-
-⚠️ **Trademark Notice:** The "Oat" logo and brand are registered trademarks of CapSEC. Use of the logo in derivative works requires permission.
-
-## 👨‍💼 About CapSEC
-
-[CapSEC](https://www.capsec.com.br) is a Brazilian information security consultancy specializing in secure communications and threat protection.
-
-**Related Projects:**
-- [OatCall](https://play.google.com/store/apps/details?id=com.capsec.oatcall) — Call blocking app
-- OatGuard — QR code validator (this repo)
-
-## 📧 Contact
-
-- Website: https://www.capsec.com.br
-- Email: (from CapSEC website)
-- GitHub: [@capsec-br](https://github.com/capsec-br)
-
----
-
-**Build Status:** ✅ MVP (Semana 1) — Compilado e funcional  
-**Last Updated:** 2026-09-27
+CapSEC: https://capsec.com.br | contato@capsec.com.br
